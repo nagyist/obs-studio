@@ -35,6 +35,12 @@
 
 #include <QPointer>
 
+#include <QtWebSockets\QtWebSockets>
+#include <QtWebSockets\qwebsocket.h>
+#include <QtNetwork\QtNetwork>
+#include <QtNetwork\qhostaddress.h>
+#include <QtWebSockets\qwebsocketserver.h>
+
 class QListWidgetItem;
 class VolControl;
 class QNetworkReply;
@@ -98,6 +104,9 @@ private:
 	ConfigFile    basicConfig;
 
 	QPointer<QWidget> projectors[10];
+
+	QWebSocketServer *wbsServer;
+	QWebSocket    *clientWbSocket;
 
 	void          DrawBackdrop(float cx, float cy);
 
@@ -189,6 +198,9 @@ private slots:
 	void ReorderSources(OBSScene scene);
 
 	void ProcessHotkey(obs_hotkey_id id, bool pressed);
+
+	void addClient();
+	void processRemoteController(QString str);
 
 private:
 	/* OBS Callbacks */

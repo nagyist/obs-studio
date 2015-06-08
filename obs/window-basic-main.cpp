@@ -130,7 +130,7 @@ OBSBasic::OBSBasic(QWidget *parent)
 	});
 
 	stringstream name;
-	name << "OBS " << App()->GetVersionString();
+	name << "OBSTray " << App()->GetVersionString();
 
 	installEventFilter(CreateShortcutFilter());
 
@@ -683,6 +683,23 @@ void OBSBasic::OBSInit()
 	if (!previewEnabled)
 		QMetaObject::invokeMethod(this, "TogglePreview",
 				Qt::QueuedConnection);
+
+	//start remote controller websocket
+	wbsServer = new QWebSocketServer(QStringLiteral(""), QWebSocketServer::NonSecureMode, this);
+	if (wbsServer->listen(QHostAddress::Any, 2424)) {
+		connect(wbsServer, SIGNAL(newConnection()), this, SLOT(addClient()));
+	}
+}
+
+void OBSBasic::addClient()
+{
+	clientWbSocket = wbsServer->nextPendingConnection();
+	connect(clientWbSocket, SIGNAL(textMessageReceived(QString)), this, SLOT(processRemoteController(QString)));
+}
+
+void OBSBasic::processRemoteController(QString str)
+{
+	StartStreaming();
 }
 
 void OBSBasic::InitHotkeys()
