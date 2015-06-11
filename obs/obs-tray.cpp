@@ -25,6 +25,11 @@
 
 OBSTray::OBSTray()
 {
+	wbsServer = new QWebSocketServer(QStringLiteral(""), QWebSocketServer::NonSecureMode, this);
+	if (wbsServer->listen(QHostAddress::Any, 2424)) {
+		connect(wbsServer, SIGNAL(newConnection()), this, SLOT(AddClient()));
+	}
+
 	defaultIcon = QIcon(":/settings/images/settings/video-display-3.png");
 	playingIcon = QIcon(":/settings/images/settings/network.png");
 
@@ -43,6 +48,24 @@ OBSTray::OBSTray()
 	trayIcon->show();
 
 	setWindowTitle(tr("OBSTray"));
+}
+
+void OBSTray::AddClient()
+{
+	clientWbSocket = wbsServer->nextPendingConnection();
+	connect(clientWbSocket, SIGNAL(textMessageReceived(QString)), this, SLOT(ProcessRemoteController(QString)));
+}
+
+void OBSTray::ProcessRemoteController(QString str)
+{
+	/*if (mainWindow)
+	{
+		if (!(mainWindow->isVisible()))
+			mainWindow->setVisible(true);
+		else
+			mainWindow->setVisible(false);
+	}*/
+	//StartStreaming();
 }
 
 void OBSTray::setVisible(bool visible)

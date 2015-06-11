@@ -25,6 +25,12 @@
 #include <QSystemTrayIcon>
 #include <QWidget>
 
+#include <QtWebSockets\QtWebSockets>
+#include <QtWebSockets\qwebsocket.h>
+#include <QtNetwork\QtNetwork>
+#include <QtNetwork\qhostaddress.h>
+#include <QtWebSockets\qwebsocketserver.h>
+
 class OBSTray : public QDialog {
 	Q_OBJECT
 public:
@@ -36,6 +42,8 @@ protected:
 
 private slots:
 	void setIcon(int index);
+	void AddClient();
+	void ProcessRemoteController(QString str);
 
 public slots:
 	void closeObsTray();
@@ -46,6 +54,9 @@ signals:
 private:
 	void createActions();
 	void createTrayIcon();
+
+	QPointer<QWebSocketServer>	wbsServer;
+	QPointer<QWebSocket>		clientWbSocket;
 
 	QGroupBox *iconGroupBox;
 	QComboBox *iconComboBox;

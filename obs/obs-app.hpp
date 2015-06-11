@@ -68,18 +68,12 @@ private:
 	TextLookup                     textLookup;
 	QPointer<OBSMainWindow>        mainWindow;
 
-	QPointer<QWebSocketServer>	wbsServer;
-	QPointer<QWebSocket>		clientWbSocket;
 	OBSTray						*tray;
 
 	bool InitGlobalConfig();
 	bool InitGlobalConfigDefaults();
 	bool InitLocale();
 	bool InitTheme();
-
-private slots:
-	void AddClient();
-	void ProcessRemoteController(QString str);
 
 public:
 	OBSApp(int &argc, char **argv);
