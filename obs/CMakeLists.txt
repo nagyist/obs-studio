@@ -95,6 +95,7 @@ endif()
 set(obs_SOURCES
 	${obs_PLATFORM_SOURCES}
 	obs-app.cpp
+	obs-tray.cpp
 	window-basic-main.cpp
 	window-basic-filters.cpp
 	window-basic-settings.cpp
@@ -129,6 +130,7 @@ set(obs_SOURCES
 
 set(obs_HEADERS
 	obs-app.hpp
+	obs-tray.hpp
 	platform.hpp
 	window-main.hpp
 	window-basic-main.hpp
@@ -177,7 +179,8 @@ set(obs_UI
 	forms/OBSBasicSourceSelect.ui
 	forms/OBSBasicInteraction.ui
 	forms/OBSBasicProperties.ui
-	forms/OBSRemux.ui)
+	forms/OBSRemux.ui
+	forms/OBSTrayConfigWindow.ui)
 
 set(obs_QRC
 	forms/obs.qrc)

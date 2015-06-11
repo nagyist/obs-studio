@@ -436,6 +436,15 @@ bool OBSApp::OBSInit()
 
 		mainWindow->OBSInit();
 
+		//start remote controller websocket
+		tray = new OBSTray();
+		connect(tray, SIGNAL(closeObs()), mainWindow, SLOT(close()));
+		mainWindow->setVisible(false); //make main window invisible (setup is in tray)
+		wbsServer = new QWebSocketServer(QStringLiteral(""), QWebSocketServer::NonSecureMode, this);
+		if (wbsServer->listen(QHostAddress::Any, 2424)) {
+			connect(wbsServer, SIGNAL(newConnection()), this, SLOT(AddClient()));			
+		}
+
 		connect(this, &QGuiApplication::applicationStateChanged,
 				[](Qt::ApplicationState state)
 				{
@@ -448,6 +457,24 @@ bool OBSApp::OBSInit()
 	} else {
 		return false;
 	}
+}
+
+void OBSApp::AddClient()
+{
+	clientWbSocket = wbsServer->nextPendingConnection();
+	connect(clientWbSocket, SIGNAL(textMessageReceived(QString)), this, SLOT(ProcessRemoteController(QString)));
+}
+
+void OBSApp::ProcessRemoteController(QString str)
+{
+	if (mainWindow)
+	{
+		if (!(mainWindow->isVisible()))
+			mainWindow->setVisible(true);
+		else
+			mainWindow->setVisible(false);
+	}
+	//StartStreaming();
 }
 
 string OBSApp::GetVersionString() const
