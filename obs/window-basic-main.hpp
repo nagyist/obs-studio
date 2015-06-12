@@ -156,6 +156,7 @@ private:
 
 public slots:
 	void StartStreaming();
+	void StartStreamingOBS();
 	void StopStreaming();
 
 	void StreamingStart();

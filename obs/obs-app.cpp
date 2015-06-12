@@ -439,7 +439,8 @@ bool OBSApp::OBSInit()
 		//start remote controller websocket
 		tray = new OBSTray();
 		connect(tray, SIGNAL(closeObs()), mainWindow, SLOT(close()));
-		mainWindow->setVisible(false); //make main window invisible (setup is in tray)
+		connect(tray, SIGNAL(stopStreaming()), mainWindow, SLOT(StopStreaming()));
+		//mainWindow->setVisible(false); //make main window invisible (setup is in tray)
 
 		connect(this, &QGuiApplication::applicationStateChanged,
 				[](Qt::ApplicationState state)

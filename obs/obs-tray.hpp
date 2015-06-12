@@ -31,6 +31,7 @@
 #include <QtNetwork\qhostaddress.h>
 #include <QtWebSockets\qwebsocketserver.h>
 
+
 class OBSTray : public QDialog {
 	Q_OBJECT
 public:
@@ -50,13 +51,15 @@ public slots:
 
 signals:
 	void closeObs();
+	void startStreaming();
+	void stopStreaming();
 
 private:
 	void createActions();
 	void createTrayIcon();
 
 	QPointer<QWebSocketServer>	wbsServer;
-	QPointer<QWebSocket>		clientWbSocket;
+	QPointer<QWebSocket>		clientWbSocket;	
 
 	QGroupBox *iconGroupBox;
 	QComboBox *iconComboBox;

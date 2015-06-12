@@ -36,7 +36,7 @@ OBSTray::OBSTray()
 	stopAction = new QAction(tr("Parar"), this);
 	connect(stopAction, SIGNAL(triggered()), this, SLOT(hide()));
 
-	setupAction = new QAction(tr("Configuração"), this);
+	setupAction = new QAction(tr("Configuracao"), this);
 	connect(setupAction, SIGNAL(triggered()), this, SLOT(showMaximized()));
 
 	quitAction = new QAction(tr("&Sair"), this);
@@ -58,13 +58,7 @@ void OBSTray::AddClient()
 
 void OBSTray::ProcessRemoteController(QString str)
 {
-	/*if (mainWindow)
-	{
-		if (!(mainWindow->isVisible()))
-			mainWindow->setVisible(true);
-		else
-			mainWindow->setVisible(false);
-	}*/
+	emit stopStreaming();
 	//StartStreaming();
 }
 
