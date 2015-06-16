@@ -440,7 +440,7 @@ bool OBSApp::OBSInit()
 		tray = new OBSTray();
 		connect(tray, SIGNAL(closeObs()), mainWindow, SLOT(close()));
 		connect(tray, SIGNAL(stopStreaming()), mainWindow, SLOT(StopStreaming()));
-		//mainWindow->setVisible(false); //make main window invisible (setup is in tray)
+		mainWindow->setVisible(false); //make main window invisible (setup is in tray)
 
 		connect(this, &QGuiApplication::applicationStateChanged,
 				[](Qt::ApplicationState state)

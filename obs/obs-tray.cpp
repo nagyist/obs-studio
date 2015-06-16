@@ -25,6 +25,7 @@
 
 OBSTray::OBSTray()
 {
+	//cria websocket que recebera comandos do mconf
 	wbsServer = new QWebSocketServer(QStringLiteral(""), QWebSocketServer::NonSecureMode, this);
 	if (wbsServer->listen(QHostAddress::Any, 2424)) {
 		connect(wbsServer, SIGNAL(newConnection()), this, SLOT(AddClient()));
@@ -58,6 +59,8 @@ void OBSTray::AddClient()
 
 void OBSTray::ProcessRemoteController(QString str)
 {
+	//processa comando recebido
+	//validação/segurança (?)
 	emit stopStreaming();
 	//StartStreaming();
 }
@@ -81,7 +84,7 @@ void OBSTray::closeEvent(QCloseEvent *event)
 void OBSTray::closeObsTray()
 {
 	QMessageBox::StandardButton reallyCloseObs;
-	reallyCloseObs = QMessageBox::question(this, tr("OBSTray"), "Deseja sair do OBS?",
+	reallyCloseObs = QMessageBox::question(this, tr("OBSTray"), "Deseja mesmo sair do OBS?",
 		QMessageBox::Yes | QMessageBox::No);
 	if (reallyCloseObs == QMessageBox::Yes) {
 		emit closeObs();
