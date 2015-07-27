@@ -35,6 +35,8 @@
 class OBSTray : public QDialog {
 	Q_OBJECT
 public:
+	bool obsRunning;
+
 	OBSTray();
 	void setVisible(bool visible) Q_DECL_OVERRIDE;
 
@@ -50,6 +52,7 @@ public slots:
 	void closeObsTray();
 
 signals:
+	void prepareObs();
 	void closeObs();
 	void startStreaming();
 	void stopStreaming();

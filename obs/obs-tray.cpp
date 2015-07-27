@@ -61,7 +61,13 @@ void OBSTray::ProcessRemoteController(QString str)
 {
 	//processa comando recebido
 	//validação/segurança (?)
-	emit stopStreaming();
+	if (QString::compare(str, "prepareOBS")){
+		emit prepareObs();
+		obsRunning = true;
+	}
+
+	if (QString::compare(str, "stopStreaming"))
+		emit stopStreaming();
 	//StartStreaming();
 }
 
@@ -86,8 +92,9 @@ void OBSTray::closeObsTray()
 	QMessageBox::StandardButton reallyCloseObs;
 	reallyCloseObs = QMessageBox::question(this, tr("OBSTray"), "Deseja mesmo sair do OBS?",
 		QMessageBox::Yes | QMessageBox::No);
-	if (reallyCloseObs == QMessageBox::Yes) {
+	if (reallyCloseObs == QMessageBox::Yes && obsRunning) {
 		emit closeObs();
+		obsRunning = false;
 	}
 }
 

@@ -597,10 +597,11 @@ bool OBSApp::OBSInit()
 		mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
 		connect(mainWindow, SIGNAL(destroyed()), this, SLOT(quit()));
 
-		mainWindow->OBSInit();
+		//mainWindow->OBSInit();
 
 		//start remote controller websocket
 		tray = new OBSTray();
+		connect(tray, SIGNAL(prepareObs()), mainWindow, SLOT(OBSInit()));
 		connect(tray, SIGNAL(closeObs()), mainWindow, SLOT(close()));
 		connect(tray, SIGNAL(stopStreaming()), mainWindow, SLOT(StopStreaming()));
 		mainWindow->setVisible(false); //make main window invisible (setup is in tray)

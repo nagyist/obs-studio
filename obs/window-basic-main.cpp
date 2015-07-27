@@ -908,11 +908,11 @@ void OBSBasic::OBSInit()
 				"DisableAero");
 		SetAeroEnabled(!disableAero);
 	}
-#endif
+#endif*/
 
 	RefreshSceneCollections();
 	RefreshProfiles();
-	disableSaving--;*/
+	disableSaving--;
 }
 
 void OBSBasic::InitHotkeys()
@@ -1123,7 +1123,7 @@ OBSBasic::~OBSBasic()
 	config_set_bool(App()->GlobalConfig(), "BasicWindow", "PreviewEnabled",
 			previewEnabled);
 	config_save(App()->GlobalConfig());
-
+	/*
 #ifdef _WIN32
 	uint32_t winVer = GetWindowsVersion();
 	if (winVer > 0 && winVer < 0x602) {
@@ -1133,7 +1133,7 @@ OBSBasic::~OBSBasic()
 			SetAeroEnabled(true);
 		}
 	}
-#endif
+#endif*/
 }
 
 void OBSBasic::SaveProjectNow()
