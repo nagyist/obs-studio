@@ -158,6 +158,12 @@ OBSBasic::OBSBasic(QWidget *parent)
 			ResizePreview(ovi.base_width, ovi.base_height);
 	});
 
+<<<<<<< HEAD
+=======
+	stringstream name;
+	name << "OBSTray " << App()->GetVersionString();
+
+>>>>>>> d8e368d970bfb33c34dd5f0d387ad50f7e482423
 	installEventFilter(CreateShortcutFilter());
 
 	stringstream name;
@@ -532,6 +538,7 @@ void OBSBasic::SaveService()
 	obs_data_t *settings = obs_service_get_settings(service);
 
 	obs_data_set_string(data, "type", obs_service_get_type(service));
+	//obs_data_set_default_string(data, "server", "localhost");
 	obs_data_set_obj(data, "settings", settings);
 
 	const char *json = obs_data_get_json(data);
@@ -562,6 +569,7 @@ bool OBSBasic::LoadService()
 	type = obs_data_get_string(data, "type");
 
 	obs_data_t *settings = obs_data_get_obj(data, "settings");
+	//obs_data_set_default_string(obs_data_get_obj(data, "settings"), "server", "localhost");
 	obs_data_t *hotkey_data = obs_data_get_obj(data, "hotkeys");
 
 	service = obs_service_create(type, "default_service", settings,
@@ -582,6 +590,7 @@ bool OBSBasic::InitService()
 
 	service = obs_service_create("rtmp_common", "default_service", nullptr,
 			nullptr);
+
 	if (!service)
 		return false;
 	obs_service_release(service);
@@ -895,6 +904,7 @@ void OBSBasic::OBSInit()
 			"BasicWindow", "PreviewEnabled");
 	if (!previewEnabled)
 		QMetaObject::invokeMethod(this, "TogglePreview",
+<<<<<<< HEAD
 				Qt::QueuedConnection);
 
 #ifdef _WIN32
@@ -909,6 +919,9 @@ void OBSBasic::OBSInit()
 	RefreshSceneCollections();
 	RefreshProfiles();
 	disableSaving--;
+=======
+				Qt::QueuedConnection);	
+>>>>>>> d8e368d970bfb33c34dd5f0d387ad50f7e482423
 }
 
 void OBSBasic::InitHotkeys()
@@ -2975,6 +2988,19 @@ void OBSBasic::OpenSceneFilters()
 	"==== Streaming Stop ================================================"
 
 void OBSBasic::StartStreaming()
+{
+	SaveProject();
+
+	if (outputHandler->StreamingActive())
+		return;
+
+	if (outputHandler->StartStreaming(service)) {
+		ui->streamButton->setEnabled(false);
+		ui->streamButton->setText(QTStr("Basic.Main.Connecting"));
+	}
+}
+
+void OBSBasic::StartStreamingOBS()
 {
 	SaveProject();
 

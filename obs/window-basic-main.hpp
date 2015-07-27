@@ -104,7 +104,7 @@ private:
 
 	ConfigFile    basicConfig;
 
-	QPointer<QWidget> projectors[10];
+	QPointer<QWidget> projectors[10];	
 
 	void          DrawBackdrop(float cx, float cy);
 
@@ -190,6 +190,7 @@ private:
 
 public slots:
 	void StartStreaming();
+	void StartStreamingOBS();
 	void StopStreaming();
 
 	void StreamingStart();
