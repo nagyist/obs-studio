@@ -81,11 +81,11 @@ elseif(UNIX)
 		platform-x11.cpp)
 
 	find_package(XCB COMPONENTS XCB REQUIRED RANDR REQUIRED XINERAMA REQUIRED)
-	
+
 	include_directories(
 		${XCB_INCLUDE_DIRS}
 		${X11_XCB_INCLUDE_DIRS})
-		
+
 	add_definitions(
 		${XCB_DEFINITIONS}
 		${X11_XCB_DEFINITIONS})
@@ -188,13 +188,9 @@ set(obs_UI
 	forms/OBSBasicSettings.ui
 	forms/OBSBasicSourceSelect.ui
 	forms/OBSBasicInteraction.ui
-<<<<<<< HEAD
-	forms/OBSRemux.ui)
-=======
 	forms/OBSBasicProperties.ui
 	forms/OBSRemux.ui
 	forms/OBSTrayConfigWindow.ui)
->>>>>>> d8e368d970bfb33c34dd5f0d387ad50f7e482423
 
 set(obs_QRC
 	forms/obs.qrc)
