@@ -158,16 +158,11 @@ OBSBasic::OBSBasic(QWidget *parent)
 			ResizePreview(ovi.base_width, ovi.base_height);
 	});
 
-<<<<<<< HEAD
-=======
 	stringstream name;
 	name << "OBSTray " << App()->GetVersionString();
 
->>>>>>> d8e368d970bfb33c34dd5f0d387ad50f7e482423
 	installEventFilter(CreateShortcutFilter());
 
-	stringstream name;
-	name << "OBS " << App()->GetVersionString();	
 	blog(LOG_INFO, "%s", name.str().c_str());
 	blog(LOG_INFO, "---------------------------------");
 
@@ -904,9 +899,8 @@ void OBSBasic::OBSInit()
 			"BasicWindow", "PreviewEnabled");
 	if (!previewEnabled)
 		QMetaObject::invokeMethod(this, "TogglePreview",
-<<<<<<< HEAD
 				Qt::QueuedConnection);
-
+	/*
 #ifdef _WIN32
 	uint32_t winVer = GetWindowsVersion();
 	if (winVer > 0 && winVer < 0x602) {
@@ -918,10 +912,7 @@ void OBSBasic::OBSInit()
 
 	RefreshSceneCollections();
 	RefreshProfiles();
-	disableSaving--;
-=======
-				Qt::QueuedConnection);	
->>>>>>> d8e368d970bfb33c34dd5f0d387ad50f7e482423
+	disableSaving--;*/
 }
 
 void OBSBasic::InitHotkeys()
