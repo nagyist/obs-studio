@@ -601,7 +601,8 @@ bool OBSApp::OBSInit()
 
 		//start remote controller websocket
 		tray = new OBSTray();
-		connect(tray, SIGNAL(prepareObs()), mainWindow, SLOT(OBSInit()));
+		connect(tray, SIGNAL(prepareObs()), mainWindow, SLOT(PrepareObs()));
+		connect(tray, SIGNAL(toggleVisibility()), mainWindow, SLOT(ToggleVisibility()));
 		connect(tray, SIGNAL(closeObs()), mainWindow, SLOT(close()));
 		connect(tray, SIGNAL(stopStreaming()), mainWindow, SLOT(StopStreaming()));
 		mainWindow->setVisible(false); //make main window invisible (setup is in tray)

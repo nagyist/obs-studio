@@ -34,10 +34,13 @@ OBSTray::OBSTray()
 	defaultIcon = QIcon(":/settings/images/settings/video-display-3.png");
 	playingIcon = QIcon(":/settings/images/settings/network.png");
 
+	toggleVisibilityAction = new QAction(tr("Toggle"), this);
+	connect(toggleVisibilityAction, SIGNAL(triggered()), this, SLOT(ToggleVisibility()));
+
 	stopAction = new QAction(tr("Parar"), this);
 	connect(stopAction, SIGNAL(triggered()), this, SLOT(hide()));
 
-	setupAction = new QAction(tr("Configuracao"), this);
+	setupAction = new QAction(QString::fromLatin1("Configuração"), this);
 	connect(setupAction, SIGNAL(triggered()), this, SLOT(showMaximized()));
 
 	quitAction = new QAction(tr("&Sair"), this);
@@ -49,6 +52,8 @@ OBSTray::OBSTray()
 	trayIcon->show();
 
 	setWindowTitle(tr("OBSTray"));
+
+	obsRunning = false;
 }
 
 void OBSTray::AddClient()
@@ -61,14 +66,31 @@ void OBSTray::ProcessRemoteController(QString str)
 {
 	//processa comando recebido
 	//validação/segurança (?)
-	if (QString::compare(str, "prepareOBS")){
+	if (QString::compare(str, "prepareOBS") == 0){
 		emit prepareObs();
 		obsRunning = true;
 	}
 
-	if (QString::compare(str, "stopStreaming"))
-		emit stopStreaming();
+	else if (QString::compare(str, "stopStreaming") != 0){
+		if (obsRunning) emit stopStreaming();
+	}
+		
 	//StartStreaming();
+}
+
+void OBSTray::ToggleVisibility(){
+	if (obsRunning)
+		emit toggleVisibility();
+	else{
+		QMessageBox::StandardButton result = 
+			QMessageBox::question(this, tr("OBS is not running"),
+			tr("Deseja iniciar o OBS?"), QMessageBox::Yes | QMessageBox::No);
+
+		if (result == QMessageBox::Yes){
+			emit prepareObs();
+			obsRunning = true;
+		}
+	}
 }
 
 void OBSTray::setVisible(bool visible)
@@ -110,6 +132,7 @@ void OBSTray::setIcon(int index)
 void OBSTray::createTrayIcon()
 {
 	trayIconMenu = new QMenu(this);
+	trayIconMenu->addAction(toggleVisibilityAction);
 	trayIconMenu->addAction(stopAction);
 	trayIconMenu->addAction(setupAction);
 	trayIconMenu->addSeparator();

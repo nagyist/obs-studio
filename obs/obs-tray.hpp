@@ -47,11 +47,13 @@ private slots:
 	void setIcon(int index);
 	void AddClient();
 	void ProcessRemoteController(QString str);
-
+	
 public slots:
+	void ToggleVisibility();
 	void closeObsTray();
 
 signals:
+	void toggleVisibility();
 	void prepareObs();
 	void closeObs();
 	void startStreaming();
@@ -67,6 +69,7 @@ private:
 	QGroupBox *iconGroupBox;
 	QComboBox *iconComboBox;
 
+	QAction *toggleVisibilityAction;
 	QAction *setupAction;
 	QAction *stopAction;
 	QAction *quitAction;

@@ -2978,6 +2978,10 @@ void OBSBasic::OpenSceneFilters()
 #define STREAMING_STOP \
 	"==== Streaming Stop ================================================"
 
+void OBSBasic::PrepareObs(){
+	this->OBSInit();
+}
+
 void OBSBasic::StartStreaming()
 {
 	SaveProject();
@@ -2989,6 +2993,10 @@ void OBSBasic::StartStreaming()
 		ui->streamButton->setEnabled(false);
 		ui->streamButton->setText(QTStr("Basic.Main.Connecting"));
 	}
+}
+
+void OBSBasic::ToggleVisibility(){
+	this->setVisible(!isVisible());
 }
 
 void OBSBasic::StartStreamingOBS()
