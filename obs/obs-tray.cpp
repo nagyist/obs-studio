@@ -23,10 +23,14 @@
 
 #include "obs-tray.hpp"
 
+// exibe corretamente strings acentuadas
+#define ptbr QString::fromLatin1
+
 OBSTray::OBSTray()
 {
 	//cria websocket que recebera comandos do mconf
-	wbsServer = new QWebSocketServer(QStringLiteral(""), QWebSocketServer::NonSecureMode, this);
+	wbsServer = new QWebSocketServer(QStringLiteral(""),
+		QWebSocketServer::NonSecureMode, this);
 	if (wbsServer->listen(QHostAddress::Any, 2424)) {
 		connect(wbsServer, SIGNAL(newConnection()), this, SLOT(AddClient()));
 	}
@@ -35,12 +39,13 @@ OBSTray::OBSTray()
 	playingIcon = QIcon(":/settings/images/settings/network.png");
 
 	toggleVisibilityAction = new QAction(tr("Toggle"), this);
-	connect(toggleVisibilityAction, SIGNAL(triggered()), this, SLOT(ToggleVisibility()));
+	connect(toggleVisibilityAction, SIGNAL(triggered()),
+		this, SLOT(ToggleVisibility()));
 
 	stopAction = new QAction(tr("Parar"), this);
 	connect(stopAction, SIGNAL(triggered()), this, SLOT(hide()));
 
-	setupAction = new QAction(QString::fromLatin1("Configuração"), this);
+	setupAction = new QAction(ptbr("Configuração"), this);
 	connect(setupAction, SIGNAL(triggered()), this, SLOT(showMaximized()));
 
 	quitAction = new QAction(tr("&Sair"), this);
@@ -66,15 +71,13 @@ void OBSTray::ProcessRemoteController(QString str)
 {
 	//processa comando recebido
 	//validação/segurança (?)
-	if (QString::compare(str, "prepareOBS") == 0){
-		emit prepareObs();
-		obsRunning = true;
-	}
+	if (QString::compare(str, "prepareOBS") == 0)
+		SendPrepareSignal();
 
-	else if (QString::compare(str, "stopStreaming") != 0){
-		if (obsRunning) emit stopStreaming();
-	}
-		
+	else if (QString::compare(str, "stopStreaming") != 0)
+		SendStopStreamingSignal();
+	
+	// como dizer pro obs o endereço da transmissão?
 	//StartStreaming();
 }
 
@@ -83,15 +86,45 @@ void OBSTray::ToggleVisibility(){
 		emit toggleVisibility();
 	else{
 		QMessageBox::StandardButton result = 
-			QMessageBox::question(this, tr("OBS is not running"),
-			tr("Deseja iniciar o OBS?"), QMessageBox::Yes | QMessageBox::No);
+			QMessageBox::question(this, tr("OBS"),
+			ptbr("OBS não está em execução\r\nDeseja iniciar o OBS?"),
+			QMessageBox::Yes | QMessageBox::No);
 
-		if (result == QMessageBox::Yes){
-			emit prepareObs();
-			obsRunning = true;
-		}
+		if (result == QMessageBox::Yes)
+			SendPrepareSignal();
 	}
 }
+
+
+void OBSTray::SendPrepareSignal(){
+	// don't open OBS if it is already running
+	if (obsRunning) return;
+
+	emit prepareObs();
+	obsRunning = true;
+}
+
+void OBSTray::SendStartStreamingSignal(){
+	if (!obsRunning) return;
+
+	emit startStreaming();
+}
+
+void OBSTray::SendStopStreamingSignal(bool close){
+	if (!obsRunning) return;
+		
+	emit stopStreaming();
+
+	if (close)
+		emit closeObs();
+}
+
+void OBSTray::SendCloseSignal(){
+	if (!obsRunning) return;
+
+	emit closeObs();
+}
+
 
 void OBSTray::setVisible(bool visible)
 {
@@ -114,10 +147,8 @@ void OBSTray::closeObsTray()
 	QMessageBox::StandardButton reallyCloseObs;
 	reallyCloseObs = QMessageBox::question(this, tr("OBSTray"), "Deseja mesmo sair do OBS?",
 		QMessageBox::Yes | QMessageBox::No);
-	if (reallyCloseObs == QMessageBox::Yes && obsRunning) {
-		emit closeObs();
-		obsRunning = false;
-	}
+	if (reallyCloseObs == QMessageBox::Yes)
+		SendCloseSignal();
 }
 
 void OBSTray::setIcon(int index)

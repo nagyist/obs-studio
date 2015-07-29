@@ -35,13 +35,18 @@
 class OBSTray : public QDialog {
 	Q_OBJECT
 public:
-	bool obsRunning;
-
 	OBSTray();
 	void setVisible(bool visible) Q_DECL_OVERRIDE;
 
 protected:
 	void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
+	void SendPrepareSignal();
+	void SendStartStreamingSignal();
+	void SendStopStreamingSignal(bool close = true);
+	void SendCloseSignal();
+
+	bool obsRunning;
+	
 
 private slots:
 	void setIcon(int index);
