@@ -74,8 +74,17 @@ void OBSTray::ProcessRemoteController(QString str)
 	if (QString::compare(str, "prepareOBS") == 0)
 		SendPrepareSignal();
 
-	else if (QString::compare(str, "stopStreaming") != 0)
+	else if (QString::compare(str, "toggleOBS") == 0)
+		ToggleVisibility();
+
+	else if (QString::compare(str, "stopStreaming") == 0)
 		SendStopStreamingSignal();
+
+	else if (QString::compare(str, "closeOBS") == 0)
+		SendCloseSignal();
+
+	else if (QString::compare(str, "relaunchOBS") == 0)
+		SendRelunchSignal();
 	
 	// como dizer pro obs o endereço da transmissão?
 	//StartStreaming();
@@ -116,15 +125,27 @@ void OBSTray::SendStopStreamingSignal(bool close){
 	emit stopStreaming();
 
 	if (close)
-		emit closeObs();
+		SendCloseSignal();
 }
 
 void OBSTray::SendCloseSignal(){
 	if (!obsRunning) return;
 
+	// how can I close OBS without closing the application?
 	emit closeObs();
+	obsRunning = false;
 }
 
+void OBSTray::SendRelunchSignal(){
+	if (!obsRunning)
+		SendPrepareSignal();
+	else{
+		emit relaunchObs();
+		emit closeObs();
+		obsRunning = false;
+	}
+		
+}
 
 void OBSTray::setVisible(bool visible)
 {

@@ -44,6 +44,7 @@ protected:
 	void SendStartStreamingSignal();
 	void SendStopStreamingSignal(bool close = true);
 	void SendCloseSignal();
+	void SendRelunchSignal();
 
 	bool obsRunning;
 	
@@ -61,6 +62,7 @@ signals:
 	void toggleVisibility();
 	void prepareObs();
 	void closeObs();
+	void relaunchObs();
 	void startStreaming();
 	void stopStreaming();
 

@@ -75,6 +75,9 @@ private:
 	bool InitLocale();
 	bool InitTheme();
 
+public slots:
+	void onRelaunchRequest();
+
 public:
 	OBSApp(int &argc, char **argv);
 

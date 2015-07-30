@@ -53,6 +53,7 @@ static string currentLogFile;
 static string lastLogFile;
 
 static bool portable_mode = false;
+static bool relaunchOBS = false;
 
 QObject *CreateShortcutFilter()
 {
@@ -598,15 +599,17 @@ bool OBSApp::OBSInit()
 		connect(mainWindow, SIGNAL(destroyed()), this, SLOT(quit()));
 
 		//mainWindow->OBSInit();
-
+		
 		//start remote controller websocket
 		tray = new OBSTray();
 		connect(tray, SIGNAL(prepareObs()), mainWindow, SLOT(PrepareObs()));
 		connect(tray, SIGNAL(toggleVisibility()), mainWindow, SLOT(ToggleVisibility()));
+		connect(tray, SIGNAL(relaunchObs()), this, SLOT(onRelaunchRequest()));
+		//connect(tray, SIGNAL(relaunchObs()), mainWindow, SLOT(close()));
 		connect(tray, SIGNAL(closeObs()), mainWindow, SLOT(close()));
 		connect(tray, SIGNAL(stopStreaming()), mainWindow, SLOT(StopStreaming()));
 		mainWindow->setVisible(false); //make main window invisible (setup is in tray)
-
+		
 		connect(this, &QGuiApplication::applicationStateChanged,
 				[](Qt::ApplicationState state)
 				{
@@ -619,6 +622,10 @@ bool OBSApp::OBSInit()
 	} else {
 		return false;
 	}
+}
+
+void OBSApp::onRelaunchRequest(){
+	relaunchOBS = true;
 }
 
 string OBSApp::GetVersionString() const
@@ -873,23 +880,27 @@ static int run_program(fstream &logFile, int argc, char *argv[])
 {
 	int ret = -1;
 	QCoreApplication::addLibraryPath(".");
+	
+	do {
+		relaunchOBS = false;
+		OBSApp program(argc, argv);
+		try {
+			program.AppInit();
 
-	OBSApp program(argc, argv);
-	try {
-		program.AppInit();
+			OBSTranslator translator;
 
-		OBSTranslator translator;
+			create_log_file(logFile);
 
-		create_log_file(logFile);
+			program.installTranslator(&translator);
 
-		program.installTranslator(&translator);
+			ret = program.OBSInit() ? program.exec() : 0;
 
-		ret = program.OBSInit() ? program.exec() : 0;
-
-	} catch (const char *error) {
-		blog(LOG_ERROR, "%s", error);
-		OBSErrorBox(nullptr, "%s", error);
-	}
+		}
+		catch (const char *error) {
+			blog(LOG_ERROR, "%s", error);
+			OBSErrorBox(nullptr, "%s", error);
+		}
+	} while (relaunchOBS);
 
 	return ret;
 }

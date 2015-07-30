@@ -847,6 +847,7 @@ void OBSBasic::OBSInit()
 
 	/* make sure it's fully displayed before doing any initialization */
 	show();
+
 	App()->processEvents();
 
 	if (!obs_startup(App()->GetLocale()))
@@ -2208,7 +2209,7 @@ void OBSBasic::closeEvent(QCloseEvent *event)
 	QWidget::closeEvent(event);
 	if (!event->isAccepted())
 		return;
-
+	
 	if (updateCheckThread)
 		updateCheckThread->wait();
 	if (logUploadThread)
