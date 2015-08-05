@@ -2979,10 +2979,6 @@ void OBSBasic::OpenSceneFilters()
 #define STREAMING_STOP \
 	"==== Streaming Stop ================================================"
 
-void OBSBasic::PrepareObs(){
-	this->OBSInit();
-}
-
 void OBSBasic::StartStreaming()
 {
 	SaveProject();

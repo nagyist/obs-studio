@@ -40,14 +40,9 @@ public:
 
 protected:
 	void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
-	void SendPrepareSignal();
 	void SendStartStreamingSignal();
-	void SendStopStreamingSignal(bool close = true);
+	void SendStopStreamingSignal();
 	void SendCloseSignal();
-	void SendRelunchSignal();
-
-	bool obsRunning;
-	
 
 private slots:
 	void setIcon(int index);
@@ -60,9 +55,7 @@ public slots:
 
 signals:
 	void toggleVisibility();
-	void prepareObs();
 	void closeObs();
-	void relaunchObs();
 	void startStreaming();
 	void stopStreaming();
 

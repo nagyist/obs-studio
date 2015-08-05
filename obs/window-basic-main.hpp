@@ -189,7 +189,6 @@ private:
 	obs_hotkey_pair_id streamingHotkeys, recordingHotkeys;
 
 public slots:
-	void PrepareObs();
 	void ToggleVisibility();
 
 	void StartStreaming();

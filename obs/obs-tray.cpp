@@ -57,8 +57,6 @@ OBSTray::OBSTray()
 	trayIcon->show();
 
 	setWindowTitle(tr("OBSTray"));
-
-	obsRunning = false;
 }
 
 void OBSTray::AddClient()
@@ -71,10 +69,8 @@ void OBSTray::ProcessRemoteController(QString str)
 {
 	//processa comando recebido
 	//validação/segurança (?)
-	if (QString::compare(str, "prepareOBS") == 0)
-		SendPrepareSignal();
 
-	else if (QString::compare(str, "toggleOBS") == 0)
+	if (QString::compare(str, "toggleOBS") == 0)
 		ToggleVisibility();
 
 	else if (QString::compare(str, "stopStreaming") == 0)
@@ -82,69 +78,25 @@ void OBSTray::ProcessRemoteController(QString str)
 
 	else if (QString::compare(str, "closeOBS") == 0)
 		SendCloseSignal();
-
-	else if (QString::compare(str, "relaunchOBS") == 0)
-		SendRelunchSignal();
 	
 	// como dizer pro obs o endereço da transmissão?
 	//StartStreaming();
 }
 
 void OBSTray::ToggleVisibility(){
-	if (obsRunning)
-		emit toggleVisibility();
-	else{
-		QMessageBox::StandardButton result = 
-			QMessageBox::question(this, tr("OBS"),
-			ptbr("OBS não está em execução\r\nDeseja iniciar o OBS?"),
-			QMessageBox::Yes | QMessageBox::No);
-
-		if (result == QMessageBox::Yes)
-			SendPrepareSignal();
-	}
-}
-
-
-void OBSTray::SendPrepareSignal(){
-	// don't open OBS if it is already running
-	if (obsRunning) return;
-
-	emit prepareObs();
-	obsRunning = true;
+	emit toggleVisibility();
 }
 
 void OBSTray::SendStartStreamingSignal(){
-	if (!obsRunning) return;
-
 	emit startStreaming();
 }
 
-void OBSTray::SendStopStreamingSignal(bool close){
-	if (!obsRunning) return;
-		
+void OBSTray::SendStopStreamingSignal(){
 	emit stopStreaming();
-
-	if (close)
-		SendCloseSignal();
 }
 
 void OBSTray::SendCloseSignal(){
-	if (!obsRunning) return;
-
-	// how can I close OBS without closing the application?
 	emit closeObs();
-	obsRunning = false;
-}
-
-void OBSTray::SendRelunchSignal(){
-	if (!obsRunning)
-		SendPrepareSignal();
-	else{
-		emit relaunchObs();
-		emit closeObs();
-		obsRunning = false;
-	}
-		
 }
 
 void OBSTray::setVisible(bool visible)
@@ -156,7 +108,7 @@ void OBSTray::closeEvent(QCloseEvent *event)
 {
 	if (trayIcon->isVisible()) {
 		QMessageBox::information(this, tr("OBSTray"),
-			tr("OBSTray continuará executando em segundo "
+			ptbr("OBSTray continuará executando em segundo "
 			"plano aguardando o início da transmissão."));
 		hide();
 		event->ignore();

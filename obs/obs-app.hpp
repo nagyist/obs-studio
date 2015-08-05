@@ -62,11 +62,11 @@ class OBSApp : public QApplication {
 	Q_OBJECT
 
 private:
-	std::string                    locale;
-	std::string		       theme;
-	ConfigFile                     globalConfig;
-	TextLookup                     textLookup;
-	QPointer<OBSMainWindow>        mainWindow;
+	std::string					locale;
+	std::string					theme;
+	ConfigFile					globalConfig;
+	TextLookup					textLookup;
+	QPointer<OBSMainWindow>		mainWindow;
 
 	OBSTray						*tray;
 
@@ -74,9 +74,6 @@ private:
 	bool InitGlobalConfigDefaults();
 	bool InitLocale();
 	bool InitTheme();
-
-public slots:
-	void onRelaunchRequest();
 
 public:
 	OBSApp(int &argc, char **argv);
