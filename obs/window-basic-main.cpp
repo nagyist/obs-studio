@@ -910,7 +910,7 @@ void OBSBasic::OBSInit()
 		SetAeroEnabled(!disableAero);
 	}
 #endif*/
-
+	
 	RefreshSceneCollections();
 	RefreshProfiles();
 	disableSaving--;
@@ -2994,19 +2994,6 @@ void OBSBasic::StartStreaming()
 
 void OBSBasic::ToggleVisibility(){
 	this->setVisible(!isVisible());
-}
-
-void OBSBasic::StartStreamingOBS()
-{
-	SaveProject();
-
-	if (outputHandler->StreamingActive())
-		return;
-
-	if (outputHandler->StartStreaming(service)) {
-		ui->streamButton->setEnabled(false);
-		ui->streamButton->setText(QTStr("Basic.Main.Connecting"));
-	}
 }
 
 void OBSBasic::StopStreaming()

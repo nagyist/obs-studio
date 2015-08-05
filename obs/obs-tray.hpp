@@ -31,6 +31,8 @@
 #include <QtNetwork\qhostaddress.h>
 #include <QtWebSockets\qwebsocketserver.h>
 
+#include <memory>
+#include "ui_OBSTrayConfigWindow.h"
 
 class OBSTray : public QDialog {
 	Q_OBJECT
@@ -78,4 +80,6 @@ private:
 	QIcon defaultIcon;
 	QIcon playingIcon;
 	QMenu *trayIconMenu;
+
+	std::unique_ptr<Ui::OBSTrayConfig> ui;
 };

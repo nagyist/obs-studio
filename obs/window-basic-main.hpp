@@ -192,7 +192,6 @@ public slots:
 	void ToggleVisibility();
 
 	void StartStreaming();
-	void StartStreamingOBS();
 	void StopStreaming();
 
 	void StreamingStart();

@@ -22,12 +22,15 @@
 #include <QMessageBox>
 
 #include "obs-tray.hpp"
+#include "ui_OBSTrayConfigWindow.h"
 
 // exibe corretamente strings acentuadas
 #define ptbr QString::fromLatin1
 
-OBSTray::OBSTray()
+OBSTray::OBSTray() : ui(new Ui::OBSTrayConfig)
 {
+	ui->setupUi(this);
+
 	//cria websocket que recebera comandos do mconf
 	wbsServer = new QWebSocketServer(QStringLiteral(""),
 		QWebSocketServer::NonSecureMode, this);
@@ -118,7 +121,8 @@ void OBSTray::closeEvent(QCloseEvent *event)
 void OBSTray::closeObsTray()
 {
 	QMessageBox::StandardButton reallyCloseObs;
-	reallyCloseObs = QMessageBox::question(this, tr("OBSTray"), "Deseja mesmo sair do OBS?",
+	reallyCloseObs = QMessageBox::question(this, tr("OBSTray"),
+		ptbr("Tem certeza que deseja encerrar o OBS?"),
 		QMessageBox::Yes | QMessageBox::No);
 	if (reallyCloseObs == QMessageBox::Yes)
 		SendCloseSignal();
@@ -137,7 +141,7 @@ void OBSTray::createTrayIcon()
 {
 	trayIconMenu = new QMenu(this);
 	trayIconMenu->addAction(toggleVisibilityAction);
-	trayIconMenu->addAction(stopAction);
+	//trayIconMenu->addAction(stopAction);
 	trayIconMenu->addAction(setupAction);
 	trayIconMenu->addSeparator();
 	trayIconMenu->addAction(quitAction);
