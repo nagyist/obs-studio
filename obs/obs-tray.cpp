@@ -21,11 +21,18 @@
 #include <QMenu>
 #include <QMessageBox>
 
+#include "rapidjson/document.h"
+#include "rapidjson/reader.h"
+
 #include "obs-tray.hpp"
 #include "ui_OBSTrayConfigWindow.h"
 
+#include <iostream>
+
 // exibe corretamente strings acentuadas
 #define ptbr QString::fromLatin1
+
+using namespace rapidjson;
 
 OBSTray::OBSTray() : ui(new Ui::OBSTrayConfig)
 {
@@ -49,7 +56,7 @@ OBSTray::OBSTray() : ui(new Ui::OBSTrayConfig)
 	connect(stopAction, SIGNAL(triggered()), this, SLOT(hide()));
 
 	setupAction = new QAction(ptbr("Configuração"), this);
-	connect(setupAction, SIGNAL(triggered()), this, SLOT(showMaximized()));
+	connect(setupAction, SIGNAL(triggered()), this, SLOT(show()));
 
 	quitAction = new QAction(tr("&Sair"), this);
 	connect(quitAction, SIGNAL(triggered()), this, SLOT(closeObsTray()));
@@ -72,14 +79,18 @@ void OBSTray::ProcessRemoteController(QString str)
 {
 	//processa comando recebido
 	//validação/segurança (?)
+	Message m(str);
 
-	if (QString::compare(str, "toggleOBS") == 0)
+	if (!m.isValid)
+		return;
+
+	if (m.Type == "Toggle")
 		ToggleVisibility();
 
-	else if (QString::compare(str, "stopStreaming") == 0)
+	else if (m.Type == "StopStreaming")
 		SendStopStreamingSignal();
 
-	else if (QString::compare(str, "closeOBS") == 0)
+	else if (m.Type == "Close")
 		SendCloseSignal();
 	
 	// como dizer pro obs o endereço da transmissão?
@@ -90,8 +101,9 @@ void OBSTray::ToggleVisibility(){
 	emit toggleVisibility();
 }
 
-void OBSTray::SendStartStreamingSignal(){
-	emit startStreaming();
+void OBSTray::SendStartStreamingSignal(Message c){
+	emit startStreaming(c.StreamURL, c.StreamPath,
+		c.DisplayID, c.Width, c.Height, c.Downscale, c.BitRate);
 }
 
 void OBSTray::SendStopStreamingSignal(){
@@ -99,6 +111,8 @@ void OBSTray::SendStopStreamingSignal(){
 }
 
 void OBSTray::SendCloseSignal(){
+	trayIcon->hide();
+
 	emit closeObs();
 }
 
@@ -148,4 +162,55 @@ void OBSTray::createTrayIcon()
 
 	trayIcon = new QSystemTrayIcon(this);
 	trayIcon->setContextMenu(trayIconMenu);
+}
+
+Message::Message(QString str){
+	isValid = true;		RawData = "";
+	MessageID = 0;		Type = "";
+	StreamPath = "";	StreamURL = "";
+	DisplayID = 0;		Width = 0;	Height = 0;
+	Downscale = 0;		BitRate = 0;
+
+	bool debug = false;
+	
+	std::string data = str.toStdString();
+
+	Document d;
+	d.Parse(data.c_str());
+
+	RawData = str;
+
+	try{
+		Type = d["type"].GetString();
+		
+		if (d.HasMember("id"))
+			MessageID = d["id"].GetInt();
+
+		if (d.HasMember("debug"))
+			debug = d["debug"].GetBool();
+	}
+	catch (std::exception e){
+		isValid = false;
+	}
+
+	if (debug)
+		QMessageBox::information(nullptr, "Message",
+			data.c_str(), QMessageBox::StandardButton::Ok);
+
+	if (Type == "StartStreaming"){
+		try{
+			StreamPath = d["streampath"].GetString();
+			StreamURL = d["streamurl"].GetString();
+
+			DisplayID = d["displayid"].GetInt();
+			Width = d["width"].GetInt();
+			Height = d["height"].GetInt();
+			Downscale = d["downscale"].GetInt();
+			BitRate = d["bitrate"].GetInt();
+		}
+		catch(std::exception e){
+			isValid = false;
+		}
+		
+	}
 }

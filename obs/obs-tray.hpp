@@ -31,7 +31,7 @@
 #include <QtNetwork\qhostaddress.h>
 #include <QtWebSockets\qwebsocketserver.h>
 
-#include <memory>
+#include <memory>	// std::unique_ptr (for the ui)
 #include "ui_OBSTrayConfigWindow.h"
 
 class OBSTray : public QDialog {
@@ -42,7 +42,7 @@ public:
 
 protected:
 	void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
-	void SendStartStreamingSignal();
+	void SendStartStreamingSignal(Message configs);
 	void SendStopStreamingSignal();
 	void SendCloseSignal();
 
@@ -58,7 +58,8 @@ public slots:
 signals:
 	void toggleVisibility();
 	void closeObs();
-	void startStreaming();
+	void startStreaming(QString url, QString path, int display,
+		int width, int height, int downscale, int bitrate);
 	void stopStreaming();
 
 private:
@@ -82,4 +83,24 @@ private:
 	QMenu *trayIconMenu;
 
 	std::unique_ptr<Ui::OBSTrayConfig> ui;
+};
+
+class Message{
+public:
+	Message(QString json_data);
+	
+	bool isValid;
+	QString RawData;
+	int MessageID;
+
+	QString Type;
+
+	QString StreamPath;
+	QString StreamURL;
+	
+	int DisplayID;
+	int Width;
+	int Height;
+	int Downscale;
+	int BitRate;
 };
