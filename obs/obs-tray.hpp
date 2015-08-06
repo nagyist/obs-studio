@@ -34,6 +34,8 @@
 #include <memory>	// std::unique_ptr (for the ui)
 #include "ui_OBSTrayConfigWindow.h"
 
+class Message;
+
 class OBSTray : public QDialog {
 	Q_OBJECT
 public:
