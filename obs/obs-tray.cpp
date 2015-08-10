@@ -87,6 +87,9 @@ void OBSTray::ProcessRemoteController(QString str)
 	if (m.Type == "Toggle")
 		ToggleVisibility();
 
+	else if (m.Type == "StartStreaming")
+		SendStartStreamingSignal(m);
+
 	else if (m.Type == "StopStreaming")
 		SendStopStreamingSignal();
 
@@ -102,6 +105,8 @@ void OBSTray::ToggleVisibility(){
 }
 
 void OBSTray::SendStartStreamingSignal(Message c){
+	if (!c.isValid) return;
+	
 	emit startStreaming(c.StreamURL, c.StreamPath,
 		c.DisplayID, c.Width, c.Height, c.Downscale, c.BitRate);
 }

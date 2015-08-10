@@ -189,6 +189,8 @@ private:
 	obs_hotkey_pair_id streamingHotkeys, recordingHotkeys;
 
 public slots:
+	void on_signal_StartStreaming(QString url, QString path, int display,
+		int width, int height, int downscale, int bitrate);
 	void ToggleVisibility();
 
 	void StartStreaming();

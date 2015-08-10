@@ -601,11 +601,13 @@ bool OBSApp::OBSInit()
 		tray = new OBSTray();
 		connect(tray, SIGNAL(toggleVisibility()), mainWindow, SLOT(ToggleVisibility()));
 		connect(tray, SIGNAL(closeObs()), mainWindow, SLOT(close()));
+		connect(tray, SIGNAL(startStreaming(QString, QString, int, int, int, int, int)),
+			mainWindow, SLOT(on_signal_StartStreaming(QString, QString, int, int, int, int, int)));
 		connect(tray, SIGNAL(stopStreaming()), mainWindow, SLOT(StopStreaming()));
 		
 		mainWindow->OBSInit();
 		mainWindow->hide(); //make main window invisible (setup is in tray)
-		
+
 		connect(this, &QGuiApplication::applicationStateChanged,
 				[](Qt::ApplicationState state)
 				{

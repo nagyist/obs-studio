@@ -2992,6 +2992,14 @@ void OBSBasic::StartStreaming()
 	}
 }
 
+void OBSBasic::on_signal_StartStreaming(QString url, QString path, int display,
+		int width, int height, int downscale, int bitrate){
+	
+	
+	StartStreaming();
+
+}
+
 void OBSBasic::ToggleVisibility(){
 	this->setVisible(!isVisible());
 }
