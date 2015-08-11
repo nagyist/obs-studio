@@ -24,6 +24,9 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 
+#include <QWidget>
+#include <QComboBox>
+
 #include <util/dstr.h>
 #include <util/util.hpp>
 #include <util/platform.h>
@@ -2995,9 +2998,18 @@ void OBSBasic::StartStreaming()
 void OBSBasic::on_signal_StartStreaming(QString url, QString path, int display,
 		int width, int height, int downscale, int bitrate){
 	
+	OBSBasicSettings settings(this);
+	settings.findChild<QComboBox*>("streamType")->setCurrentIndex(1);
 	
-	StartStreaming();
+	settings.GetStreamProperties()->setProperty("server", url);
+	settings.GetStreamProperties()->setProperty("key", path);
+	
+	settings.findChild<QDialogButtonBox*>("buttonBox")->
+		button(QDialogButtonBox::Ok)->click();
 
+	settings.GetStreamProperties()->ReloadProperties();
+
+	//StartStreaming();
 }
 
 void OBSBasic::ToggleVisibility(){

@@ -1859,7 +1859,7 @@ void OBSBasicSettings::SaveStream1Settings()
 
 	obs_service_t *oldService = main->GetService();
 	obs_data_t *hotkeyData = obs_hotkeys_save_service(oldService);
-
+	
 	obs_service_t *newService = obs_service_create(QT_TO_UTF8(streamType),
 			"default_service", streamProperties->GetSettings(),
 			hotkeyData);
@@ -2322,7 +2322,7 @@ void OBSBasicSettings::on_streamType_currentIndexChanged(int idx)
 			QT_TO_UTF8(streamType),
 			(PropertiesReloadCallback)obs_get_service_properties,
 			170);
-
+	
 	streamProperties->setProperty("changed", QVariant(true));
 	layout->addWidget(streamProperties);
 
@@ -2330,6 +2330,10 @@ void OBSBasicSettings::on_streamType_currentIndexChanged(int idx)
 			this, STREAM1_CHANGED);
 
 	obs_data_release(settings);
+}
+
+OBSPropertiesView* OBSBasicSettings::GetStreamProperties(){
+	return streamProperties;
 }
 
 void OBSBasicSettings::on_simpleOutputBrowse_clicked()

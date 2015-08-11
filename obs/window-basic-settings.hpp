@@ -265,5 +265,6 @@ protected:
 	virtual void closeEvent(QCloseEvent *event);
 
 public:
+	OBSPropertiesView* GetStreamProperties();
 	OBSBasicSettings(QWidget *parent);
 };

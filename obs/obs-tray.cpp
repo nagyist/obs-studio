@@ -83,7 +83,7 @@ void OBSTray::ProcessRemoteController(QString str)
 
 	if (!m.isValid)
 		return;
-
+	
 	if (m.Type == "Toggle")
 		ToggleVisibility();
 
@@ -97,7 +97,6 @@ void OBSTray::ProcessRemoteController(QString str)
 		SendCloseSignal();
 	
 	// como dizer pro obs o endereço da transmissão?
-	//StartStreaming();
 }
 
 void OBSTray::ToggleVisibility(){
@@ -106,7 +105,7 @@ void OBSTray::ToggleVisibility(){
 
 void OBSTray::SendStartStreamingSignal(Message c){
 	if (!c.isValid) return;
-	
+
 	emit startStreaming(c.StreamURL, c.StreamPath,
 		c.DisplayID, c.Width, c.Height, c.Downscale, c.BitRate);
 }
