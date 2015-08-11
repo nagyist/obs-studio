@@ -2998,16 +2998,19 @@ void OBSBasic::StartStreaming()
 void OBSBasic::on_signal_StartStreaming(QString url, QString path, int display,
 		int width, int height, int downscale, int bitrate){
 	
-	OBSBasicSettings settings(this);
-	settings.findChild<QComboBox*>("streamType")->setCurrentIndex(1);
+	OBSBasicSettings basicSettings(this);
+	basicSettings.findChild<QComboBox*>("streamType")->setCurrentIndex(1);
 	
-	settings.GetStreamProperties()->setProperty("server", url);
-	settings.GetStreamProperties()->setProperty("key", path);
-	
-	settings.findChild<QDialogButtonBox*>("buttonBox")->
-		button(QDialogButtonBox::Ok)->click();
+	basicSettings.findChild<QDialogButtonBox*>("buttonBox")->
+		button(QDialogButtonBox::Apply)->click();
 
-	settings.GetStreamProperties()->ReloadProperties();
+
+	obs_data_t *settingsData = basicSettings.GetStreamProperties()->GetSettings();
+
+	obs_data_set_string(settingsData, "server", url.toStdString().c_str());
+	obs_data_set_string(settingsData, "key", path.toStdString().c_str());
+
+	basicSettings.GetStreamProperties()->ReloadProperties();
 
 	//StartStreaming();
 }

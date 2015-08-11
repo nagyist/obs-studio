@@ -105,7 +105,12 @@ void OBSTray::ToggleVisibility(){
 
 void OBSTray::SendStartStreamingSignal(Message c){
 	if (!c.isValid) return;
-
+	
+	/* sample
+	{"type": "StartStreaming", "streampath": "aaa",
+	"streamurl": "aaa", "displayid": 1, "width": 800,
+	"height": 600, "downscale": 2, "bitrate": 2000}
+	*/
 	emit startStreaming(c.StreamURL, c.StreamPath,
 		c.DisplayID, c.Width, c.Height, c.Downscale, c.BitRate);
 }
