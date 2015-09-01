@@ -1572,7 +1572,7 @@ void OBSBasic::TimedCheckForUpdates()
 }
 
 void OBSBasic::CheckForUpdates()
-{
+{/* DO NOT CHECK FOR UPDATES
 #ifdef UPDATE_SPARKLE
 	trigger_sparkle_update();
 #else
@@ -1589,7 +1589,7 @@ void OBSBasic::CheckForUpdates()
 	connect(thread, &RemoteTextThread::Result,
 			this, &OBSBasic::updateFileFinished);
 	updateCheckThread->start();
-#endif
+#endif*/
 }
 
 #ifdef __APPLE__

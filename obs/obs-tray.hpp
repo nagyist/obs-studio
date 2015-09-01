@@ -31,64 +31,59 @@
 #include <QtNetwork\qhostaddress.h>
 #include <QtWebSockets\qwebsocketserver.h>
 
-#include <memory>	// std::unique_ptr (for the ui)
-#include "ui_OBSTrayConfigWindow.h"
-
 class Message;
 
-class OBSTray : public QDialog {
+class OBSTray : public QSystemTrayIcon {
 	Q_OBJECT
 public:
 	OBSTray();
-	void setVisible(bool visible) Q_DECL_OVERRIDE;
+	~OBSTray();
+	void setVisible(bool visible);
 
 protected:
-	void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
 	void SendStartStreamingSignal(Message configs);
 	void SendStopStreamingSignal();
 	void SendCloseSignal();
 
 private slots:
-	void setIcon(int index);
+	void onClientConnected();
+	void setTrayIcon(int index);
 	void AddClient();
 	void ProcessRemoteController(QString str);
 	
 public slots:
 	void ToggleVisibility();
-	void closeObsTray();
+	void Close();
 
 signals:
-	void toggleVisibility();
-	void closeObs();
-	void startStreaming(QString url, QString path, int display,
+	void signal_toggleVisibility();
+	void signal_close();
+	void signal_startStreaming(QString url, QString path, int display,
 		int width, int height, int downscale, int bitrate);
-	void stopStreaming();
+	void signal_stopStreaming();
 
 private:
-	void createActions();
-	void createTrayIcon();
+	void CreateActions();
+	void CreateTrayIcon();
 
-	QPointer<QWebSocketServer>	wbsServer;
-	QPointer<QWebSocket>		clientWbSocket;	
+	QPointer<QWebSocketServer>	wsServer;
+	QPointer<QWebSocket>		wsClient;	
 
 	QGroupBox *iconGroupBox;
 	QComboBox *iconComboBox;
 
 	QAction *toggleVisibilityAction;
-	QAction *setupAction;
 	QAction *stopAction;
 	QAction *quitAction;
 
-	QSystemTrayIcon *trayIcon;
 	QIcon defaultIcon;
 	QIcon playingIcon;
 	QMenu *trayIconMenu;
-
-	std::unique_ptr<Ui::OBSTrayConfig> ui;
 };
 
 class Message{
 public:
+	Message();
 	Message(QString json_data);
 	
 	bool isValid;
@@ -105,4 +100,6 @@ public:
 	int Height;
 	int Downscale;
 	int BitRate;
+
+	void ReadFrom(std::string message);
 };

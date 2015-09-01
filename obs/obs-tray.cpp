@@ -25,7 +25,6 @@
 #include "rapidjson/reader.h"
 
 #include "obs-tray.hpp"
-#include "ui_OBSTrayConfigWindow.h"
 
 #include <iostream>
 
@@ -34,49 +33,60 @@
 
 using namespace rapidjson;
 
-OBSTray::OBSTray() : ui(new Ui::OBSTrayConfig)
-{
-	ui->setupUi(this);
-
+OBSTray::OBSTray(){
 	//cria websocket que recebera comandos do mconf
-	wbsServer = new QWebSocketServer(QStringLiteral(""),
+	wsServer = new QWebSocketServer(QStringLiteral(""),
 		QWebSocketServer::NonSecureMode, this);
-	if (wbsServer->listen(QHostAddress::Any, 2424)) {
-		connect(wbsServer, SIGNAL(newConnection()), this, SLOT(AddClient()));
+
+	if (wsServer->listen(QHostAddress::Any, 2424)) {
+		connect(wsServer, SIGNAL(newConnection()), this, SLOT(AddClient()));
 	}
 
 	defaultIcon = QIcon(":/settings/images/settings/video-display-3.png");
 	playingIcon = QIcon(":/settings/images/settings/network.png");
 
+	CreateActions();
+	
+	// Prevents the application from exiting when there are no windows open
+	qApp->setQuitOnLastWindowClosed(false);
+
+	this->setIcon(defaultIcon);
+	CreateTrayIcon();
+	this->show();
+}
+
+void OBSTray::AddClient(){
+	wsClient = wsServer->nextPendingConnection();
+	
+	connect(wsClient, SIGNAL(connected()), this, SLOT(onClientConnected()));
+	connect(wsClient, SIGNAL(textMessageReceived(QString)), this, SLOT(ProcessRemoteController(QString)));
+}
+
+void OBSTray::onClientConnected(){
+	// Send version message to client
+	wsClient->sendTextMessage(tr("version: unknown"));
+}
+
+void OBSTray::CreateActions(){
 	toggleVisibilityAction = new QAction(tr("Toggle"), this);
 	connect(toggleVisibilityAction, SIGNAL(triggered()),
 		this, SLOT(ToggleVisibility()));
 
-	stopAction = new QAction(tr("Parar"), this);
-	connect(stopAction, SIGNAL(triggered()), this, SLOT(hide()));
-
-	setupAction = new QAction(ptbr("Configuração"), this);
-	connect(setupAction, SIGNAL(triggered()), this, SLOT(show()));
-
 	quitAction = new QAction(tr("&Sair"), this);
-	connect(quitAction, SIGNAL(triggered()), this, SLOT(closeObsTray()));
-
-	createTrayIcon();
-
-	trayIcon->setIcon(defaultIcon);
-	trayIcon->show();
-
-	setWindowTitle(tr("OBSTray"));
+	connect(quitAction, SIGNAL(triggered()), this, SLOT(Close()));
 }
 
-void OBSTray::AddClient()
-{
-	clientWbSocket = wbsServer->nextPendingConnection();
-	connect(clientWbSocket, SIGNAL(textMessageReceived(QString)), this, SLOT(ProcessRemoteController(QString)));
+void OBSTray::CreateTrayIcon(){
+	trayIconMenu = new QMenu(nullptr);
+	trayIconMenu->addAction(toggleVisibilityAction);
+	trayIconMenu->addSeparator();
+	trayIconMenu->addAction(quitAction);
+
+	this->setContextMenu(trayIconMenu);
+	this->setToolTip(tr("Mconf Deskshare"));
 }
 
-void OBSTray::ProcessRemoteController(QString str)
-{
+void OBSTray::ProcessRemoteController(QString str){
 	//processa comando recebido
 	//validação/segurança (?)
 	Message m(str);
@@ -95,103 +105,79 @@ void OBSTray::ProcessRemoteController(QString str)
 
 	else if (m.Type == "Close")
 		SendCloseSignal();
-	
-	// como dizer pro obs o endereço da transmissão?
 }
 
 void OBSTray::ToggleVisibility(){
-	emit toggleVisibility();
+	emit signal_toggleVisibility();
 }
 
 void OBSTray::SendStartStreamingSignal(Message c){
 	if (!c.isValid) return;
 	
 	/* sample
-	{"type": "StartStreaming", "streampath": "aaa",
-	"streamurl": "aaa", "displayid": 1, "width": 800,
-	"height": 600, "downscale": 2, "bitrate": 2000}
+{"type": "StartStreaming", "streampath": "path", 
+"streamurl": "url", "displayid": 1, "width": 800, 
+"height": 600, "downscale": 2, "bitrate": 2000}
 	*/
-	emit startStreaming(c.StreamURL, c.StreamPath,
+
+	emit signal_startStreaming(c.StreamURL, c.StreamPath,
 		c.DisplayID, c.Width, c.Height, c.Downscale, c.BitRate);
 }
 
 void OBSTray::SendStopStreamingSignal(){
-	emit stopStreaming();
+	emit signal_stopStreaming();
 }
 
 void OBSTray::SendCloseSignal(){
-	trayIcon->hide();
+	this->hide();
 
-	emit closeObs();
+	emit signal_close();
 }
 
-void OBSTray::setVisible(bool visible)
-{
-	QDialog::setVisible(visible);
-}
-
-void OBSTray::closeEvent(QCloseEvent *event)
-{
-	if (trayIcon->isVisible()) {
-		QMessageBox::information(this, tr("OBSTray"),
-			ptbr("OBSTray continuará executando em segundo "
-			"plano aguardando o início da transmissão."));
-		hide();
-		event->ignore();
-	}
-}
-
-void OBSTray::closeObsTray()
-{
+void OBSTray::Close(){
 	QMessageBox::StandardButton reallyCloseObs;
-	reallyCloseObs = QMessageBox::question(this, tr("OBSTray"),
-		ptbr("Tem certeza que deseja encerrar o OBS?"),
-		QMessageBox::Yes | QMessageBox::No);
+	reallyCloseObs = QMessageBox::question(nullptr, tr("OBSTray"),
+		ptbr("Tem certeza que deseja encerrar o OBS?"));
+
 	if (reallyCloseObs == QMessageBox::Yes)
 		SendCloseSignal();
 }
 
-void OBSTray::setIcon(int index)
+OBSTray::~OBSTray() {
+	this->hide();
+}
+
+void OBSTray::setTrayIcon(int index)
 {
 	QIcon icon = iconComboBox->itemIcon(index);
-	trayIcon->setIcon(icon);
-	setWindowIcon(icon);
+	this->setIcon(icon);
 
-	trayIcon->setToolTip(iconComboBox->itemText(index));
+	this->setToolTip(iconComboBox->itemText(index));
 }
 
-void OBSTray::createTrayIcon()
-{
-	trayIconMenu = new QMenu(this);
-	trayIconMenu->addAction(toggleVisibilityAction);
-	//trayIconMenu->addAction(stopAction);
-	trayIconMenu->addAction(setupAction);
-	trayIconMenu->addSeparator();
-	trayIconMenu->addAction(quitAction);
-
-	trayIcon = new QSystemTrayIcon(this);
-	trayIcon->setContextMenu(trayIconMenu);
-}
-
-Message::Message(QString str){
+Message::Message() {
 	isValid = true;		RawData = "";
 	MessageID = 0;		Type = "";
 	StreamPath = "";	StreamURL = "";
 	DisplayID = 0;		Width = 0;	Height = 0;
 	Downscale = 0;		BitRate = 0;
+}
 
+Message::Message(QString str) {
+	Message();
+
+	RawData = str;
+	ReadFrom(str.toStdString());
+}
+
+void Message::ReadFrom(std::string data){
 	bool debug = false;
-	
-	std::string data = str.toStdString();
-
 	Document d;
 	d.Parse(data.c_str());
 
-	RawData = str;
-
 	try{
 		Type = d["type"].GetString();
-		
+
 		if (d.HasMember("id"))
 			MessageID = d["id"].GetInt();
 
@@ -204,7 +190,7 @@ Message::Message(QString str){
 
 	if (debug)
 		QMessageBox::information(nullptr, "Message",
-			data.c_str(), QMessageBox::StandardButton::Ok);
+		data.c_str(), QMessageBox::StandardButton::Ok);
 
 	if (Type == "StartStreaming"){
 		try{
@@ -217,9 +203,9 @@ Message::Message(QString str){
 			Downscale = d["downscale"].GetInt();
 			BitRate = d["bitrate"].GetInt();
 		}
-		catch(std::exception e){
+		catch (std::exception e){
 			isValid = false;
 		}
-		
+
 	}
 }
