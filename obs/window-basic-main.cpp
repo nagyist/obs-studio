@@ -853,6 +853,8 @@ void OBSBasic::OBSInit()
 
 	App()->processEvents();
 
+	hide();
+
 	if (!obs_startup(App()->GetLocale()))
 		throw "Failed to initialize libobs";
 	if (!InitBasicConfig())
@@ -896,7 +898,7 @@ void OBSBasic::OBSInit()
 	Load(savePath);
 	disableSaving++;
 
-	TimedCheckForUpdates();
+	//TimedCheckForUpdates();
 	loaded = true;
 
 	bool previewEnabled = config_get_bool(App()->GlobalConfig(),
@@ -3003,7 +3005,6 @@ void OBSBasic::on_signal_StartStreaming(QString url, QString path, int display,
 	
 	basicSettings.findChild<QDialogButtonBox*>("buttonBox")->
 		button(QDialogButtonBox::Apply)->click();
-
 
 	obs_data_t *settingsData = basicSettings.GetStreamProperties()->GetSettings();
 

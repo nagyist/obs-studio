@@ -606,7 +606,6 @@ bool OBSApp::OBSInit()
 		connect(tray, SIGNAL(signal_stopStreaming()), mainWindow, SLOT(StopStreaming()));
 		
 		mainWindow->OBSInit();
-		mainWindow->hide(); //make main window invisible (setup is in tray)
 
 		connect(this, &QGuiApplication::applicationStateChanged,
 				[](Qt::ApplicationState state)

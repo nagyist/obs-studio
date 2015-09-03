@@ -89,6 +89,14 @@ void OBSTray::CreateTrayIcon(){
 
 	this->setContextMenu(trayIconMenu);
 	this->setToolTip(tr("Mconf Deskshare"));
+
+	connect(this, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+		this, SLOT(onActivated(QSystemTrayIcon::ActivationReason)));
+}
+
+void OBSTray::onActivated(QSystemTrayIcon::ActivationReason reason){
+	if (reason == ActivationReason::DoubleClick)
+		ShowInfo();
 }
 
 void OBSTray::ProcessRemoteController(QString str){
@@ -161,14 +169,24 @@ void OBSTray::SendStartStreamingSignal(Message c){
 		c.DisplayID, c.Width, c.Height, c.Downscale, c.BitRate);
 
 	isStreaming = true;
+
+	showMessage(tr("Mconf Deskshare"), tr("Streaming initiated"),
+		QSystemTrayIcon::Information, 2000);
 }
 
-void OBSTray::SendStopStreamingSignal(){
+void OBSTray::SendStopStreamingSignal(bool showBalloon){
 	emit signal_stopStreaming();
 	isStreaming = false;
+
+	if (showBalloon)
+		showMessage(tr("Mconf Deskshare"), tr("Streaming stopped"),
+			QSystemTrayIcon::Information, 2000);
 }
 
 void OBSTray::SendCloseSignal(){
+	if (isStreaming)
+		SendStopStreamingSignal(false);
+	
 	this->hide();
 
 	emit signal_close();

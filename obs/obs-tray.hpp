@@ -42,7 +42,7 @@ public:
 
 protected:
 	void SendStartStreamingSignal(Message configs);
-	void SendStopStreamingSignal();
+	void SendStopStreamingSignal(bool showBalloon = true);
 	void SendCloseSignal();
 
 private slots:
@@ -50,6 +50,7 @@ private slots:
 	void AddClient();
 	void ProcessRemoteController(QString str);
 	void onClientDisconnected();
+	void onActivated(QSystemTrayIcon::ActivationReason reason);
 	
 public slots:
 	void ShowInfo();
