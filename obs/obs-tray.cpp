@@ -34,6 +34,9 @@
 using namespace rapidjson;
 
 OBSTray::OBSTray(){
+	isConnected = false;
+	isStreaming = false;
+	
 	//cria websocket que recebera comandos do mconf
 	wsServer = new QWebSocketServer(QStringLiteral(""),
 		QWebSocketServer::NonSecureMode, this);
@@ -57,17 +60,18 @@ OBSTray::OBSTray(){
 
 void OBSTray::AddClient(){
 	wsClient = wsServer->nextPendingConnection();
-	
-	connect(wsClient, SIGNAL(connected()), this, SLOT(onClientConnected()));
-	connect(wsClient, SIGNAL(textMessageReceived(QString)), this, SLOT(ProcessRemoteController(QString)));
-}
 
-void OBSTray::onClientConnected(){
-	// Send version message to client
-	wsClient->sendTextMessage(tr("version: unknown"));
+	connect(wsClient, SIGNAL(textMessageReceived(QString)), this, SLOT(ProcessRemoteController(QString)));
+	connect(wsClient, SIGNAL(disconnected()), this, SLOT(onClientDisconnected()));
+
+	wsClient->sendTextMessage(tr("{ \"version\": \"unknown\" }"));
+	isConnected = true;
 }
 
 void OBSTray::CreateActions(){
+	infoAction = new QAction(tr("Show info"), this);
+	connect(infoAction, SIGNAL(triggered()), this, SLOT(ShowInfo()));
+
 	toggleVisibilityAction = new QAction(tr("Toggle"), this);
 	connect(toggleVisibilityAction, SIGNAL(triggered()),
 		this, SLOT(ToggleVisibility()));
@@ -78,6 +82,7 @@ void OBSTray::CreateActions(){
 
 void OBSTray::CreateTrayIcon(){
 	trayIconMenu = new QMenu(nullptr);
+	trayIconMenu->addAction(infoAction);
 	trayIconMenu->addAction(toggleVisibilityAction);
 	trayIconMenu->addSeparator();
 	trayIconMenu->addAction(quitAction);
@@ -107,6 +112,35 @@ void OBSTray::ProcessRemoteController(QString str){
 		SendCloseSignal();
 }
 
+void OBSTray::onClientDisconnected(){
+	if (isStreaming)
+		SendStopStreamingSignal();
+
+	isConnected = false;
+}
+
+void OBSTray::ShowInfo(){
+	QString message;
+	
+	message += tr("Mconf Deskshare app is ");
+	if (!isConnected) message += tr("not ");
+	message += tr("connected to the Mconf client\n\n");
+
+	message += tr("Your screen is ");
+	if (!isStreaming) message += tr("not ");
+	message += tr("being shared\n\n");
+
+	if (isStreaming){
+		message += tr("URL:\n\t");
+		message += streamURL;
+
+		message += tr("\n\nPath:\n\t");
+		message += streamPath;
+	}
+
+	QMessageBox::information(nullptr, tr("Status information"), message, QMessageBox::Ok);
+}
+
 void OBSTray::ToggleVisibility(){
 	emit signal_toggleVisibility();
 }
@@ -120,12 +154,18 @@ void OBSTray::SendStartStreamingSignal(Message c){
 "height": 600, "downscale": 2, "bitrate": 2000}
 	*/
 
+	streamURL = c.StreamURL;
+	streamPath = c.StreamPath;
+
 	emit signal_startStreaming(c.StreamURL, c.StreamPath,
 		c.DisplayID, c.Width, c.Height, c.Downscale, c.BitRate);
+
+	isStreaming = true;
 }
 
 void OBSTray::SendStopStreamingSignal(){
 	emit signal_stopStreaming();
+	isStreaming = false;
 }
 
 void OBSTray::SendCloseSignal(){

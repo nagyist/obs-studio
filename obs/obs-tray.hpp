@@ -46,12 +46,13 @@ protected:
 	void SendCloseSignal();
 
 private slots:
-	void onClientConnected();
 	void setTrayIcon(int index);
 	void AddClient();
 	void ProcessRemoteController(QString str);
+	void onClientDisconnected();
 	
 public slots:
+	void ShowInfo();
 	void ToggleVisibility();
 	void Close();
 
@@ -72,6 +73,7 @@ private:
 	QGroupBox *iconGroupBox;
 	QComboBox *iconComboBox;
 
+	QAction *infoAction;
 	QAction *toggleVisibilityAction;
 	QAction *stopAction;
 	QAction *quitAction;
@@ -79,6 +81,11 @@ private:
 	QIcon defaultIcon;
 	QIcon playingIcon;
 	QMenu *trayIconMenu;
+
+	bool isConnected;
+	bool isStreaming;
+	QString streamURL;
+	QString streamPath;
 };
 
 class Message{
