@@ -47,8 +47,8 @@ protected:
 
 private slots:
 	void setTrayIcon(int index);
-	void AddClient();
-	void ProcessRemoteController(QString str);
+	void onClientConnected();
+	void onMessageReceived(QString str);
 	void onClientDisconnected();
 	void onActivated(QSystemTrayIcon::ActivationReason reason);
 	
@@ -68,6 +68,9 @@ private:
 	void CreateActions();
 	void CreateTrayIcon();
 
+	void LoadSceneSettings(int displayid);
+
+private:
 	QPointer<QWebSocketServer>	wsServer;
 	QPointer<QWebSocket>		wsClient;	
 

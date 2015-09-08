@@ -42,7 +42,7 @@ OBSTray::OBSTray(){
 		QWebSocketServer::NonSecureMode, this);
 
 	if (wsServer->listen(QHostAddress::Any, 2424)) {
-		connect(wsServer, SIGNAL(newConnection()), this, SLOT(AddClient()));
+		connect(wsServer, SIGNAL(newConnection()), this, SLOT(onClientConnected()));
 	}
 
 	defaultIcon = QIcon(":/settings/images/settings/video-display-3.png");
@@ -58,10 +58,10 @@ OBSTray::OBSTray(){
 	this->show();
 }
 
-void OBSTray::AddClient(){
+void OBSTray::onClientConnected(){
 	wsClient = wsServer->nextPendingConnection();
 
-	connect(wsClient, SIGNAL(textMessageReceived(QString)), this, SLOT(ProcessRemoteController(QString)));
+	connect(wsClient, SIGNAL(textMessageReceived(QString)), this, SLOT(onMessageReceived(QString)));
 	connect(wsClient, SIGNAL(disconnected()), this, SLOT(onClientDisconnected()));
 
 	wsClient->sendTextMessage(tr("{ \"version\": \"unknown\" }"));
@@ -99,9 +99,9 @@ void OBSTray::onActivated(QSystemTrayIcon::ActivationReason reason){
 		ShowInfo();
 }
 
-void OBSTray::ProcessRemoteController(QString str){
+void OBSTray::onMessageReceived(QString str){
 	//processa comando recebido
-	//validação/segurança (?)
+
 	Message m(str);
 
 	if (!m.isValid)
@@ -165,6 +165,8 @@ void OBSTray::SendStartStreamingSignal(Message c){
 	streamURL = c.StreamURL;
 	streamPath = c.StreamPath;
 
+	LoadSceneSettings(c.DisplayID);
+
 	emit signal_startStreaming(c.StreamURL, c.StreamPath,
 		c.DisplayID, c.Width, c.Height, c.Downscale, c.BitRate);
 
@@ -172,6 +174,39 @@ void OBSTray::SendStartStreamingSignal(Message c){
 
 	showMessage(tr("Mconf Deskshare"), tr("Streaming initiated"),
 		QSystemTrayIcon::Information, 2000);
+}
+
+void OBSTray::LoadSceneSettings(int displayid){
+	QFile file(tr("..\\..\\..\\..\\obs\\default_scene_json.txt"));
+	
+	if (!file.exists())
+		return;
+
+	file.open(QIODevice::ReadOnly | QIODevice::Text);
+	QString content = file.readAll();
+	file.close();
+
+	QMessageBox::information(nullptr, "config", content, QMessageBox::Ok);
+
+	content.replace(tr("<displayid>"), QString::number(displayid));
+
+	QMessageBox::information(nullptr, "config", content, QMessageBox::Ok);
+
+	QFile config;
+
+#if defined(_WIN32) || defined(_WIN64)
+	QString appdata = QString(getenv("APPDATA"));
+	config.setFileName(appdata + tr("\\obs-studio\\basic\\scenes\\Untitled.json"));
+
+#elif
+	return;
+#endif
+
+	config.open(QIODevice::Text | QIODevice::WriteOnly);
+	config.write(content.toStdString().c_str());
+	config.close();
+
+
 }
 
 void OBSTray::SendStopStreamingSignal(bool showBalloon){
