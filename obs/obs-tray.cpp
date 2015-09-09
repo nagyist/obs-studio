@@ -165,8 +165,6 @@ void OBSTray::SendStartStreamingSignal(Message c){
 	streamURL = c.StreamURL;
 	streamPath = c.StreamPath;
 
-	LoadSceneSettings(c.DisplayID);
-
 	emit signal_startStreaming(c.StreamURL, c.StreamPath,
 		c.DisplayID, c.Width, c.Height, c.Downscale, c.BitRate);
 
@@ -175,7 +173,7 @@ void OBSTray::SendStartStreamingSignal(Message c){
 	showMessage(tr("Mconf Deskshare"), tr("Streaming initiated"),
 		QSystemTrayIcon::Information, 2000);
 }
-
+/*
 void OBSTray::LoadSceneSettings(int displayid){
 	QFile file(tr("..\\..\\..\\..\\obs\\default_scene_json.txt"));
 	
@@ -207,7 +205,7 @@ void OBSTray::LoadSceneSettings(int displayid){
 	config.close();
 
 
-}
+}*/
 
 void OBSTray::SendStopStreamingSignal(bool showBalloon){
 	emit signal_stopStreaming();

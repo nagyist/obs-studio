@@ -73,6 +73,8 @@ private:
 
 	std::vector<OBSSignal> signalHandlers;
 
+	bool showSourcePropertiesWindow;
+
 	bool loaded = false;
 	long disableSaving = 1;
 	bool projectChanged = false;

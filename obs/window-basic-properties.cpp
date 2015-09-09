@@ -248,11 +248,12 @@ void OBSBasicProperties::closeEvent(QCloseEvent *event)
 	Cleanup();
 }
 
-void OBSBasicProperties::Init()
+void OBSBasicProperties::Init(bool showWindow)
 {
 	gs_init_data init_data = {};
 
-	show();
+	if (showWindow)
+		show();
 
 	QSize previewSize = GetPixelSize(preview);
 	init_data.cx      = uint32_t(previewSize.width());

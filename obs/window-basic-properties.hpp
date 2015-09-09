@@ -60,7 +60,7 @@ public:
 	OBSBasicProperties(QWidget *parent, OBSSource source_);
 	~OBSBasicProperties();
 
-	void Init();
+	void Init(bool show = true);
 
 protected:
 	virtual void resizeEvent(QResizeEvent *event) override;

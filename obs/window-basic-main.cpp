@@ -919,6 +919,8 @@ void OBSBasic::OBSInit()
 	RefreshSceneCollections();
 	RefreshProfiles();
 	disableSaving--;
+
+	showSourcePropertiesWindow = true;
 }
 
 void OBSBasic::InitHotkeys()
@@ -1256,7 +1258,7 @@ void OBSBasic::CreatePropertiesWindow(obs_source_t *source)
 		properties->close();
 
 	properties = new OBSBasicProperties(this, source);
-	properties->Init();
+	properties->Init(showSourcePropertiesWindow);
 	properties->setAttribute(Qt::WA_DeleteOnClose, true);
 }
 
@@ -3005,6 +3007,18 @@ void OBSBasic::on_signal_StartStreaming(QString url, QString path, int display,
 	
 	basicSettings.findChild<QDialogButtonBox*>("buttonBox")->
 		button(QDialogButtonBox::Apply)->click();
+
+
+	showSourcePropertiesWindow = false;
+	on_actionSourceProperties_triggered();
+
+	QDialogButtonBox* b =
+		properties->layout()->findChild<QDialogButtonBox*>(QString("buttonBox"));
+	
+	if (b) b->button(QDialogButtonBox::StandardButton::Ok)->click();
+
+	showSourcePropertiesWindow = true;
+
 
 	obs_data_t *settingsData = basicSettings.GetStreamProperties()->GetSettings();
 
