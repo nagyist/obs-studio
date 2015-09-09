@@ -3011,11 +3011,8 @@ void OBSBasic::on_signal_StartStreaming(QString url, QString path, int display,
 
 	showSourcePropertiesWindow = false;
 	on_actionSourceProperties_triggered();
-
-	QDialogButtonBox* b =
-		properties->layout()->findChild<QDialogButtonBox*>(QString("buttonBox"));
 	
-	if (b) b->button(QDialogButtonBox::StandardButton::Ok)->click();
+	properties->SaveChanges();
 
 	showSourcePropertiesWindow = true;
 

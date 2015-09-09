@@ -61,6 +61,7 @@ public:
 	~OBSBasicProperties();
 
 	void Init(bool show = true);
+	void SaveChanges();
 
 protected:
 	virtual void resizeEvent(QResizeEvent *event) override;
