@@ -414,4 +414,6 @@ public:
 
 private:
 	std::unique_ptr<Ui::OBSBasic> ui;
+	void deskshare_ConfigStreamAddress(QString path, QString url);
+	void deskshare_ConfigDisplayId(int displayid);
 };

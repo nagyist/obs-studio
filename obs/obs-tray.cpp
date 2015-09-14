@@ -25,6 +25,7 @@
 #include "rapidjson/reader.h"
 
 #include "obs-tray.hpp"
+#include "obs-app.hpp"
 
 #include <iostream>
 
@@ -165,8 +166,6 @@ void OBSTray::SendStartStreamingSignal(Message c){
 	streamURL = c.StreamURL;
 	streamPath = c.StreamPath;
 
-	LoadSceneSettings(c.DisplayID);
-
 	emit signal_startStreaming(c.StreamURL, c.StreamPath,
 		c.DisplayID, c.Width, c.Height, c.Downscale, c.BitRate);
 
@@ -174,35 +173,6 @@ void OBSTray::SendStartStreamingSignal(Message c){
 
 	showMessage(tr("Mconf Deskshare"), tr("Streaming initiated"),
 		QSystemTrayIcon::Information, 2000);
-}
-
-void OBSTray::LoadSceneSettings(int displayid){
-	QFile file(tr("..\\..\\..\\..\\obs\\default_scene_json.txt"));
-	
-	if (!file.exists())
-		return;
-
-	file.open(QIODevice::ReadOnly | QIODevice::Text);
-	QString content = file.readAll();
-	file.close();
-
-	content.replace(tr("<displayid>"), QString::number(displayid));
-
-	QFile config;
-
-#if defined(_WIN32) || defined(_WIN64)
-	QString appdata = QString(getenv("APPDATA"));
-	config.setFileName(appdata + tr("\\obs-studio\\basic\\scenes\\Untitled.json"));
-
-#elif
-	return;
-#endif
-
-	config.open(QIODevice::Text | QIODevice::WriteOnly);
-	config.write(content.toStdString().c_str());
-	config.close();
-
-
 }
 
 void OBSTray::SendStopStreamingSignal(bool showBalloon){

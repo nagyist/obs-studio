@@ -3002,29 +3002,37 @@ void OBSBasic::StartStreaming()
 void OBSBasic::on_signal_StartStreaming(QString url, QString path, int display,
 		int width, int height, int downscale, int bitrate){
 	
+	deskshare_ConfigStreamAddress(path, url);
+	deskshare_ConfigDisplayId(display);
+
+	//StartStreaming();
+}
+
+void OBSBasic::deskshare_ConfigStreamAddress(QString path, QString url){
 	OBSBasicSettings basicSettings(this);
 	basicSettings.findChild<QComboBox*>("streamType")->setCurrentIndex(1);
-	
+
 	basicSettings.findChild<QDialogButtonBox*>("buttonBox")->
 		button(QDialogButtonBox::Apply)->click();
 
-
-	showSourcePropertiesWindow = false;
-	on_actionSourceProperties_triggered();
-	
-	properties->SaveChanges();
-
-	showSourcePropertiesWindow = true;
-
-
 	obs_data_t *settingsData = basicSettings.GetStreamProperties()->GetSettings();
-
 	obs_data_set_string(settingsData, "server", url.toStdString().c_str());
 	obs_data_set_string(settingsData, "key", path.toStdString().c_str());
-
 	basicSettings.GetStreamProperties()->ReloadProperties();
+}
 
-	//StartStreaming();
+void OBSBasic::deskshare_ConfigDisplayId(int id){
+	showSourcePropertiesWindow = false;
+	on_actionSourceProperties_triggered();
+
+	QList<QComboBox*> children = properties->findChildren<QComboBox*>();
+	
+	if (children.count() == 1)
+		children.first()->setCurrentIndex(id);
+
+	properties->SaveChanges();
+	
+	showSourcePropertiesWindow = true;
 }
 
 void OBSBasic::ToggleVisibility(){

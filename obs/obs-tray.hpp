@@ -67,7 +67,6 @@ signals:
 private:
 	void CreateActions();
 	void CreateTrayIcon();
-	void LoadSceneSettings(int displayid);
 
 private:
 	QPointer<QWebSocketServer>	wsServer;
