@@ -158,16 +158,15 @@ void OBSTray::SendStartStreamingSignal(Message c){
 	if (!c.isValid) return;
 	
 	/* sample
-{"type": "StartStreaming", "streampath": "path", 
-"streamurl": "url", "displayid": 1, "width": 800, 
-"height": 600, "downscale": 2, "bitrate": 2000}
+{"type": "StartStreaming", "streampath": "path", "streamurl": "url", "displayid": 1, 
+"width": 1280, "height": 1024, "swidth": 800, "sheight": 600, "bitrate": 2000}
 	*/
 
 	streamURL = c.StreamURL;
 	streamPath = c.StreamPath;
 
 	emit signal_startStreaming(c.StreamURL, c.StreamPath,
-		c.DisplayID, c.Width, c.Height, c.Downscale, c.BitRate);
+		c.DisplayID, c.Width, c.Height, c.SWidth, c.SHeight, c.BitRate);
 
 	isStreaming = true;
 
@@ -219,7 +218,8 @@ Message::Message() {
 	MessageID = 0;		Type = "";
 	StreamPath = "";	StreamURL = "";
 	DisplayID = 0;		Width = 0;	Height = 0;
-	Downscale = 0;		BitRate = 0;
+	SWidth = 0;			BitRate = 0;
+	SHeight = 0;
 }
 
 Message::Message(QString str) {
@@ -259,7 +259,8 @@ void Message::ReadFrom(std::string data){
 			DisplayID = d["displayid"].GetInt();
 			Width = d["width"].GetInt();
 			Height = d["height"].GetInt();
-			Downscale = d["downscale"].GetInt();
+			SWidth = d["swidth"].GetInt();
+			SHeight = d["sheight"].GetInt();
 			BitRate = d["bitrate"].GetInt();
 		}
 		catch (std::exception e){

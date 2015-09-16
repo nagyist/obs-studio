@@ -265,6 +265,7 @@ protected:
 	virtual void closeEvent(QCloseEvent *event);
 
 public:
-	OBSPropertiesView* GetStreamProperties();
 	OBSBasicSettings(QWidget *parent);
+	OBSPropertiesView* GetStreamProperties();
+	void deskshare_SetResolutions(int w, int h, int scaled_w, int scaled_h);
 };

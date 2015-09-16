@@ -3000,20 +3000,26 @@ void OBSBasic::StartStreaming()
 }
 
 void OBSBasic::on_signal_StartStreaming(QString url, QString path, int display,
-		int width, int height, int downscale, int bitrate){
+		int width, int height, int swidth, int sheight, int bitrate){
 	
-	deskshare_ConfigStreamAddress(path, url);
+	deskshare_ConfigSettings(path, url, width, height, swidth, sheight);
 	deskshare_ConfigDisplayId(display);
 
+	// Uncomment when the actual stream path and url are given
+		// Current values are placeholders for testing purposes
 	//StartStreaming();
 }
 
-void OBSBasic::deskshare_ConfigStreamAddress(QString path, QString url){
+void OBSBasic::deskshare_ConfigSettings(QString path, QString url,
+	int w, int h, int sw, int sh)
+{
 	OBSBasicSettings basicSettings(this);
 	basicSettings.findChild<QComboBox*>("streamType")->setCurrentIndex(1);
 
+	basicSettings.deskshare_SetResolutions(w, h, sw, sh);
+
 	basicSettings.findChild<QDialogButtonBox*>("buttonBox")->
-		button(QDialogButtonBox::Apply)->click();
+		button(QDialogButtonBox::Ok)->click();
 
 	obs_data_t *settingsData = basicSettings.GetStreamProperties()->GetSettings();
 	obs_data_set_string(settingsData, "server", url.toStdString().c_str());

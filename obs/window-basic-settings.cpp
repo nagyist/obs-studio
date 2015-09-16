@@ -1873,6 +1873,12 @@ void OBSBasicSettings::SaveStream1Settings()
 	obs_service_release(newService);
 }
 
+void OBSBasicSettings::deskshare_SetResolutions(int w, int h, int sw, int sh){
+	ui->baseResolution->lineEdit()->setText(QString(w) + tr("x") + QString(h));
+	ui->outputResolution->lineEdit()->setText(QString(sw) + tr("x") + QString(sh));
+	SaveVideoSettings();
+}
+
 void OBSBasicSettings::SaveVideoSettings()
 {
 	QString baseResolution   = ui->baseResolution->currentText();

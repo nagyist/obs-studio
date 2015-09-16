@@ -61,7 +61,7 @@ signals:
 	void signal_toggleVisibility();
 	void signal_close();
 	void signal_startStreaming(QString url, QString path, int display,
-		int width, int height, int downscale, int bitrate);
+		int width, int height, int swidth, int sheight, int bitrate);
 	void signal_stopStreaming();
 
 private:
@@ -107,7 +107,8 @@ public:
 	int DisplayID;
 	int Width;
 	int Height;
-	int Downscale;
+	int SWidth;
+	int SHeight;
 	int BitRate;
 
 	void ReadFrom(std::string message);
