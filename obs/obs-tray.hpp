@@ -31,6 +31,8 @@
 #include <QtNetwork\qhostaddress.h>
 #include <QtWebSockets\qwebsocketserver.h>
 
+#define balloonDuration 1000
+
 class Message;
 
 class OBSTray : public QSystemTrayIcon {
@@ -102,14 +104,14 @@ public:
 	QString Type;
 
 	QString StreamPath;
-	QString StreamURL;
+	QString StreamName;
 	
 	int DisplayID;
 	int Width;
 	int Height;
 	int SWidth;
 	int SHeight;
-	int BitRate;
+	int Bitrate;
 
 	void ReadFrom(std::string message);
 };

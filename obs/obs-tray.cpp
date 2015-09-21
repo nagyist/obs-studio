@@ -158,20 +158,25 @@ void OBSTray::SendStartStreamingSignal(Message c){
 	if (!c.isValid) return;
 	
 	/* sample
-{"type": "StartStreaming", "streampath": "path", "streamurl": "url", "displayid": 1, 
-"width": 1280, "height": 1024, "swidth": 800, "sheight": 600, "bitrate": 2000}
+{"type": "StartStreaming", "streamPath": "path", "streamName": "url", "displayId": 1, 
+"width": 1280, "height": 1024, "swidth": 800, "sheight": 600, "bitrate": 1000}
 	*/
 
-	streamURL = c.StreamURL;
+	/* current
+{"type": "StartStreaming", "streamPath": "path", "streamName": "url?", "displayId": 0, 
+"bitrate": 1000, "fps": 15, "width":800, "height": 600, "messageid":"4"}
+	*/
+
+	streamURL = c.StreamName;
 	streamPath = c.StreamPath;
 
-	emit signal_startStreaming(c.StreamURL, c.StreamPath,
-		c.DisplayID, c.Width, c.Height, c.SWidth, c.SHeight, c.BitRate);
+	emit signal_startStreaming(c.StreamName, c.StreamPath,
+		c.DisplayID, c.Width, c.Height, c.SWidth, c.SHeight, c.Bitrate);
 
 	isStreaming = true;
 
 	showMessage(tr("Mconf Deskshare"), tr("Streaming initiated"),
-		QSystemTrayIcon::Information, 2000);
+		QSystemTrayIcon::Information, balloonDuration);
 }
 
 void OBSTray::SendStopStreamingSignal(bool showBalloon){
@@ -180,7 +185,7 @@ void OBSTray::SendStopStreamingSignal(bool showBalloon){
 
 	if (showBalloon)
 		showMessage(tr("Mconf Deskshare"), tr("Streaming stopped"),
-			QSystemTrayIcon::Information, 2000);
+		QSystemTrayIcon::Information, balloonDuration);
 }
 
 void OBSTray::SendCloseSignal(){
@@ -216,9 +221,9 @@ void OBSTray::setTrayIcon(int index)
 Message::Message() {
 	isValid = true;		RawData = "";
 	MessageID = 0;		Type = "";
-	StreamPath = "";	StreamURL = "";
+	StreamPath = "";	StreamName = "";
 	DisplayID = 0;		Width = 0;	Height = 0;
-	SWidth = 0;			BitRate = 0;
+	SWidth = 0;			Bitrate = 0;
 	SHeight = 0;
 }
 
@@ -253,15 +258,15 @@ void Message::ReadFrom(std::string data){
 
 	if (Type == "StartStreaming"){
 		try{
-			StreamPath = d["streampath"].GetString();
-			StreamURL = d["streamurl"].GetString();
+			StreamPath = d["streamPath"].GetString();
+			StreamName = d["streamName"].GetString();
 
-			DisplayID = d["displayid"].GetInt();
+			DisplayID = d["displayId"].GetInt();
 			Width = d["width"].GetInt();
 			Height = d["height"].GetInt();
 			SWidth = d["swidth"].GetInt();
 			SHeight = d["sheight"].GetInt();
-			BitRate = d["bitrate"].GetInt();
+			Bitrate = d["bitrate"].GetInt();
 		}
 		catch (std::exception e){
 			isValid = false;
