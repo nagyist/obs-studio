@@ -192,7 +192,7 @@ private:
 
 public slots:
 	void on_signal_StartStreaming(QString url, QString path, int display,
-		int width, int height, int scaled_width, int scaled_height, int bitrate);
+		int width, int height, int scaled_width, int scaled_height, int fps, int bitrate);
 	void ToggleVisibility();
 
 	void StartStreaming();
@@ -415,7 +415,7 @@ public:
 private:
 	std::unique_ptr<Ui::OBSBasic> ui;
 	void deskshare_ConfigSettings(QString path, QString url,
-		int width, int height, int scaled_width, int scaled_height);
+		int width, int height, int scaled_width, int scaled_height, int fps);
 	void deskshare_ConfigDisplayId(int displayid);
 	void deskshare_ConfigVideo(int w, int h, int dw, int dh);
 };

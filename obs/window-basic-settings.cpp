@@ -1877,15 +1877,19 @@ void OBSBasicSettings::deskshare_SetResolutions(int w, int h, int sw, int sh){
 	
 	QString res = QString::number(w) + QString("x") + QString::number(h);
 	QString scaled = QString::number(sw) + QString("x") + QString::number(sh);
-
-	blog(LOG_INFO, "Resolution: %s\nScaled resolution: %s",
-		res.toStdString().c_str(), scaled.toStdString().c_str());
-
+	
 	ui->baseResolution->lineEdit()->setText(res);
 	ui->outputResolution->lineEdit()->setText(scaled);
 	VideoChangedResolution();
 
 	ui->buttonBox->button(QDialogButtonBox::Ok)->click();
+}
+
+void OBSBasicSettings::deskshare_SetFPS(int fps){
+	ui->fpsType->setCurrentIndex(1);
+	ui->fpsInteger->setValue(fps);
+
+	SaveVideoSettings();
 }
 
 void OBSBasicSettings::SaveVideoSettings()
