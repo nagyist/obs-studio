@@ -269,4 +269,5 @@ public:
 	OBSPropertiesView* GetStreamProperties();
 	void deskshare_SetResolutions(int w, int h, int scaled_w, int scaled_h);
 	void deskshare_SetFPS(int fps);
+	void deskshare_SetBitrate(int rate);
 };

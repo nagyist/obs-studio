@@ -415,7 +415,7 @@ public:
 private:
 	std::unique_ptr<Ui::OBSBasic> ui;
 	void deskshare_ConfigSettings(QString path, QString url,
-		int width, int height, int scaled_width, int scaled_height, int fps);
+		int width, int height, int scaled_width, int scaled_height, int fps, int bitrate);
 	void deskshare_ConfigDisplayId(int displayid);
 	void deskshare_ConfigVideo(int w, int h, int dw, int dh);
 };

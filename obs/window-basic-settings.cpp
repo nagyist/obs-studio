@@ -1880,16 +1880,22 @@ void OBSBasicSettings::deskshare_SetResolutions(int w, int h, int sw, int sh){
 	
 	ui->baseResolution->lineEdit()->setText(res);
 	ui->outputResolution->lineEdit()->setText(scaled);
-	VideoChangedResolution();
 
+	VideoChangedResolution();
 	ui->buttonBox->button(QDialogButtonBox::Ok)->click();
 }
 
 void OBSBasicSettings::deskshare_SetFPS(int fps){
 	ui->fpsType->setCurrentIndex(1);
 	ui->fpsInteger->setValue(fps);
-
+	
 	SaveVideoSettings();
+}
+
+void OBSBasicSettings::deskshare_SetBitrate(int rate){
+	ui->simpleOutputVBitrate->setValue(rate);
+	
+	ui->buttonBox->button(QDialogButtonBox::Ok)->click();
 }
 
 void OBSBasicSettings::SaveVideoSettings()
