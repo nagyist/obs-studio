@@ -159,12 +159,7 @@ void OBSTray::SendStartStreamingSignal(Message c){
 	if (!c.isValid) return;
 	
 	/* sample
-{"type": "StartStreaming", "streamPath": "path", "streamName": "url", "displayId": 1, 
-"width": 1280, "height": 1024, "fps": 15, "bitrate": 1000}
-	*/
-
-	/* current
-{"type": "StartStreaming", "streamPath": "path", "streamName": "url?", "displayId": 0, 
+{"type": "StartStreaming", "streamPath": "path", "streamName": "name", "displayId": 0, 
 "bitrate": 1000, "fps": 15, "width":800, "height": 600, "messageid":"4"}
 	*/
 
@@ -256,8 +251,8 @@ void Message::ReadFrom(std::string data){
 	try{
 		Type = d["type"].GetString();
 
-		if (d.HasMember("id"))
-			MessageID = d["id"].GetInt();
+		if (d.HasMember("messageid"))
+			MessageID = std::stoi(d["messageid"].GetString());
 
 		if (d.HasMember("debug"))
 			debug = d["debug"].GetBool();
