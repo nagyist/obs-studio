@@ -20,6 +20,7 @@
 #include <QIcon>
 #include <QMenu>
 #include <QMessageBox>
+#include <QDesktopWidget>
 
 #include "rapidjson/document.h"
 #include "rapidjson/reader.h"
@@ -159,7 +160,7 @@ void OBSTray::SendStartStreamingSignal(Message c){
 	
 	/* sample
 {"type": "StartStreaming", "streamPath": "path", "streamName": "url", "displayId": 1, 
-"width": 1280, "height": 1024, "swidth": 800, "sheight": 600, "fps": 15, "bitrate": 1000}
+"width": 1280, "height": 1024, "fps": 15, "bitrate": 1000}
 	*/
 
 	/* current
@@ -167,11 +168,23 @@ void OBSTray::SendStartStreamingSignal(Message c){
 "bitrate": 1000, "fps": 15, "width":800, "height": 600, "messageid":"4"}
 	*/
 
-	streamURL = c.StreamName;
-	streamPath = c.StreamPath;
+	QDesktopWidget desktop;
+
+	if (c.DisplayID > desktop.screenCount()){
+		showMessage(tr("Error"), tr("Invalid display id. Aborting stream."),
+			QSystemTrayIcon::Warning, balloonDuration);
+		
+		return;
+	}
+
+	streamURL = c.StreamPath;
+	streamPath = c.StreamName;
+
+	int width	= desktop.screenGeometry(c.DisplayID).width();
+	int height	= desktop.screenGeometry(c.DisplayID).height();
 
 	emit signal_startStreaming(c.StreamName, c.StreamPath,
-		c.DisplayID, c.Width, c.Height, c.SWidth, c.SHeight, c.FPS, c.Bitrate);
+		c.DisplayID, width, height, c.Width, c.Height, c.FPS, c.Bitrate);
 
 	isStreaming = true;
 
@@ -225,8 +238,7 @@ Message::Message() {
 	Type		= "";		StreamPath	= "";
 	StreamName	= "";		DisplayID	= 0;
 	Width		= 0;		Height		= 0;
-	SWidth		= 0;		FPS			= 0;
-	SHeight		= 0;		Bitrate		= 0;
+	FPS			= 0;		Bitrate		= 0;
 }
 
 Message::Message(QString str) {
@@ -266,8 +278,6 @@ void Message::ReadFrom(std::string data){
 			DisplayID	=	d["displayId"].GetInt();
 			Width		=	d["width"].GetInt();
 			Height		=	d["height"].GetInt();
-			SWidth		=	d["swidth"].GetInt();
-			SHeight		=	d["sheight"].GetInt();
 			FPS			=	d["fps"].GetInt();
 			Bitrate		=	d["bitrate"].GetInt();
 		}

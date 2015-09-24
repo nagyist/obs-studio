@@ -109,8 +109,6 @@ public:
 	int DisplayID;
 	int Width;
 	int Height;
-	int SWidth;
-	int SHeight;
 	int FPS;
 	int Bitrate;
 
