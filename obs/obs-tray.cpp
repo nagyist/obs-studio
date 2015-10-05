@@ -42,8 +42,8 @@ OBSTray::OBSTray(){
 	//cria websocket que recebera comandos do mconf
 	wsServer = new QWebSocketServer(QStringLiteral(""),
 		QWebSocketServer::NonSecureMode, this);
-
-	if (wsServer->listen(QHostAddress::Any, 2424)) {
+	
+	if (wsServer->listen(QHostAddress("ws://127.0.0.1/obstraycontrol"), 2424)) {
 		connect(wsServer, SIGNAL(newConnection()), this, SLOT(onClientConnected()));
 	}
 
@@ -68,6 +68,7 @@ void OBSTray::onClientConnected(){
 
 	wsClient->sendTextMessage(tr("{ \"version\": \"unknown\" }"));
 	isConnected = true;
+	setIcon(playingIcon);
 }
 
 void OBSTray::CreateActions(){
@@ -127,6 +128,7 @@ void OBSTray::onClientDisconnected(){
 		SendStopStreamingSignal();
 
 	isConnected = false;
+	setIcon(defaultIcon);
 }
 
 void OBSTray::ShowInfo(){

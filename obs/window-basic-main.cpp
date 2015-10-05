@@ -3005,9 +3005,7 @@ void OBSBasic::on_signal_StartStreaming(QString name, QString url, int display,
 	deskshare_ConfigSettings(name, url, width, height, swidth, sheight, fps, bitrate);
 	deskshare_ConfigDisplayId(display);
 
-	// Uncomment when the actual stream path and url are given
-		// Current values are placeholders for testing purposes
-	//StartStreaming();
+	StartStreaming();
 }
 
 void OBSBasic::deskshare_ConfigSettings(QString path, QString url,
