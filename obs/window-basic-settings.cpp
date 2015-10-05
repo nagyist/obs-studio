@@ -1873,6 +1873,10 @@ void OBSBasicSettings::SaveStream1Settings()
 	obs_service_release(newService);
 }
 
+void OBSBasicSettings::deskshare_SaveStreamSettings(){
+	SaveStream1Settings();
+}
+
 void OBSBasicSettings::deskshare_SetResolutions(int w, int h, int sw, int sh){
 	
 	QString res = QString::number(w) + QString("x") + QString::number(h);

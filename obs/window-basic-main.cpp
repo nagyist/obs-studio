@@ -3024,7 +3024,7 @@ void OBSBasic::deskshare_ConfigSettings(QString path, QString url,
 	obs_data_t *settingsData = basicSettings.GetStreamProperties()->GetSettings();
 	obs_data_set_string(settingsData, "server", url.toStdString().c_str());
 	obs_data_set_string(settingsData, "key", path.toStdString().c_str());
-	basicSettings.GetStreamProperties()->ReloadProperties();
+	basicSettings.deskshare_SaveStreamSettings();
 }
 
 void OBSBasic::deskshare_ConfigDisplayId(int id){
