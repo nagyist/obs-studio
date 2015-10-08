@@ -1878,7 +1878,6 @@ void OBSBasicSettings::deskshare_SaveStreamSettings(){
 }
 
 void OBSBasicSettings::deskshare_SetResolutions(int w, int h, int sw, int sh){
-	
 	QString res = QString::number(w) + QString("x") + QString::number(h);
 	QString scaled = QString::number(sw) + QString("x") + QString::number(sh);
 	

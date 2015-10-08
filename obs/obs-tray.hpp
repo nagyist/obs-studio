@@ -57,6 +57,7 @@ private slots:
 public slots:
 	void ShowInfo();
 	void ToggleVisibility();
+	void ShowConfigWindow();
 	void Close();
 
 signals:
@@ -79,6 +80,7 @@ private:
 
 	QAction *infoAction;
 	QAction *toggleVisibilityAction;
+	QAction *configAction;
 	QAction *stopAction;
 	QAction *quitAction;
 

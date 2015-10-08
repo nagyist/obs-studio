@@ -27,6 +27,7 @@
 
 #include "obs-tray.hpp"
 #include "obs-app.hpp"
+#include "obs-tray-window-config.hpp"
 
 #include <iostream>
 
@@ -79,6 +80,9 @@ void OBSTray::CreateActions(){
 	connect(toggleVisibilityAction, SIGNAL(triggered()),
 		this, SLOT(ToggleVisibility()));
 
+	configAction = new QAction(tr("Config"), this);
+	connect(configAction, SIGNAL(triggered()), this, SLOT(ShowConfigWindow()));
+
 	quitAction = new QAction(tr("&Sair"), this);
 	connect(quitAction, SIGNAL(triggered()), this, SLOT(Close()));
 }
@@ -86,6 +90,7 @@ void OBSTray::CreateActions(){
 void OBSTray::CreateTrayIcon(){
 	trayIconMenu = new QMenu(nullptr);
 	trayIconMenu->addAction(infoAction);
+	trayIconMenu->addAction(configAction);
 	trayIconMenu->addAction(toggleVisibilityAction);
 	trayIconMenu->addSeparator();
 	trayIconMenu->addAction(quitAction);
@@ -155,6 +160,12 @@ void OBSTray::ShowInfo(){
 
 void OBSTray::ToggleVisibility(){
 	emit signal_toggleVisibility();
+}
+
+void OBSTray::ShowConfigWindow(){
+	auto configWindow = OBSTrayConfig();
+
+	configWindow.exec();
 }
 
 void OBSTray::SendStartStreamingSignal(Message c){
