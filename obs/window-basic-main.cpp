@@ -849,7 +849,8 @@ void OBSBasic::OBSInit()
 		throw "Failed to get scene collection json file path";
 
 	/* make sure it's fully displayed before doing any initialization */
-	show();
+	//show();
+	hide();
 
 	App()->processEvents();
 
