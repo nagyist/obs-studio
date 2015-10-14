@@ -56,7 +56,7 @@ OBSTrayConfig::OBSTrayConfig(int displayId, bool mouse) : QDialog() {
 }
 
 void OBSTrayConfig::Save(bool close){
-	emit SetConfig(displaySelection->currentIndex(), captureMouse);
+	emit SetConfig(displaySelection->currentIndex(), captureMouse->isChecked());
 
 	if (close)
 		this->close();

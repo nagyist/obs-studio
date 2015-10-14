@@ -3008,16 +3008,22 @@ void OBSBasic::on_signal_StartStreaming(QString name, QString url, int width,
 
 void OBSBasic::on_signal_TrayConfig(int display, bool captureMouse){
 	deskshare_ConfigDisplayId(display);
+	deskshare_ConfigCaptureMouse(captureMouse);
 }
 
 void OBSBasic::on_signal_TrayConfigInit(int *displayid, bool *captureMouse){
 	showSourcePropertiesWindow = false;
 	on_actionSourceProperties_triggered();
 
-	QList<QComboBox*> children = properties->findChildren<QComboBox*>();
+	QList<QComboBox*> combo = properties->findChildren<QComboBox*>();
 
-	if (children.count() == 1)
-		*displayid = children[0]->currentIndex();
+	if (combo.count() == 1)
+		*displayid = combo[0]->currentIndex();
+
+	QList<QCheckBox*> check = properties->findChildren<QCheckBox*>();
+
+	if (check.count() == 2)
+		*captureMouse = check[1]->isChecked();
 
 	properties->close();
 
@@ -3054,6 +3060,20 @@ void OBSBasic::deskshare_ConfigDisplayId(int id){
 
 	properties->SaveChanges();
 	
+	showSourcePropertiesWindow = true;
+}
+
+void OBSBasic::deskshare_ConfigCaptureMouse(bool captureMouse){
+	showSourcePropertiesWindow = false;
+	on_actionSourceProperties_triggered();
+
+	QList<QCheckBox*> children = properties->findChildren<QCheckBox*>();
+
+	if (children.count() == 2)
+		children[1]->setChecked(captureMouse);
+
+	properties->SaveChanges();
+
 	showSourcePropertiesWindow = true;
 }
 
