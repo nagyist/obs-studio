@@ -16,6 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QtWidgets>
 #include "obs-tray-window-config.hpp"
+#include "obs-tray.hpp"
 
 OBSTrayConfig::OBSTrayConfig(int displayId, bool mouse) : QDialog() {
 	QDesktopWidget desktop;
@@ -24,7 +25,7 @@ OBSTrayConfig::OBSTrayConfig(int displayId, bool mouse) : QDialog() {
 	displaySelection = new QComboBox();
 	for (int i = 1; i <= screenCount; i++)
 		displaySelection->addItem(tr("Display ") + QString::number(i));
-	displaySelection->setCurrentIndex(displayId - 1);
+	displaySelection->setCurrentIndex(displayId);
 
 	captureMouse = new QCheckBox(tr("Capture mouse"));
 	captureMouse->setChecked(mouse);
@@ -55,7 +56,7 @@ OBSTrayConfig::OBSTrayConfig(int displayId, bool mouse) : QDialog() {
 }
 
 void OBSTrayConfig::Save(bool close){
-	emit SetConfig(displaySelection->currentIndex() + 1, captureMouse);
+	emit SetConfig(displaySelection->currentIndex(), captureMouse);
 
 	if (close)
 		this->close();

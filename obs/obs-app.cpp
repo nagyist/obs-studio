@@ -599,14 +599,23 @@ bool OBSApp::OBSInit()
 
 		//start remote controller websocket
 		tray = new OBSTray();
+		
 		connect(tray, SIGNAL(signal_toggleVisibility()), mainWindow, 
 			SLOT(ToggleVisibility()));
+		
 		connect(tray, SIGNAL(signal_close()), mainWindow, SLOT(close()));
+		
 		connect(tray, SIGNAL(signal_startStreaming
-				(QString, QString, int, int, int, int, int, int, int)),
+				(QString, QString, int, int, int, int, int, int)),
 			mainWindow, SLOT(on_signal_StartStreaming
-				(QString, QString, int, int, int, int, int, int, int)));
+				(QString, QString, int, int, int, int, int, int)));
+		
+		connect(tray, SIGNAL(signal_trayConfigInit(int*, bool*)),
+			mainWindow, SLOT(on_signal_TrayConfigInit(int*, bool*)));
 
+		connect(tray, SIGNAL(signal_trayConfigChanged(int, bool)),
+			mainWindow, SLOT(on_signal_TrayConfig(int, bool)));
+		
 		connect(tray, SIGNAL(signal_stopStreaming()),
 			mainWindow, SLOT(StopStreaming()));
 		

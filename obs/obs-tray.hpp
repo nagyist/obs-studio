@@ -31,6 +31,9 @@
 #include <QtNetwork\qhostaddress.h>
 #include <QtWebSockets\qwebsocketserver.h>
 
+#include "window-main.hpp"
+//#include "window-basic-main.hpp"
+
 #define balloonDuration 1000
 
 class Message;
@@ -53,6 +56,7 @@ private slots:
 	void onMessageReceived(QString str);
 	void onClientDisconnected();
 	void onActivated(QSystemTrayIcon::ActivationReason reason);
+	void onTrayConfig(int displayid, bool captureMouse);
 	
 public slots:
 	void ShowInfo();
@@ -63,17 +67,18 @@ public slots:
 signals:
 	void signal_toggleVisibility();
 	void signal_close();
-	void signal_startStreaming(QString url, QString path, int display,
-		int width, int height, int swidth, int sheight, int fps, int bitrate);
+	void signal_startStreaming(QString url, QString path, int width,
+		int height, int swidth, int sheight, int fps, int bitrate);
 	void signal_stopStreaming();
+	void signal_trayConfigInit(int *displayid, bool *captureMouse);
+	void signal_trayConfigChanged(int displayid, bool captureMouse);
 
 private:
 	void CreateActions();
 	void CreateTrayIcon();
 
-private:
 	QPointer<QWebSocketServer>	wsServer;
-	QPointer<QWebSocket>		wsClient;	
+	QPointer<QWebSocket>		wsClient;
 
 	QGroupBox *iconGroupBox;
 	QComboBox *iconComboBox;

@@ -2999,13 +2999,29 @@ void OBSBasic::StartStreaming()
 	}
 }
 
-void OBSBasic::on_signal_StartStreaming(QString name, QString url, int display,
-		int width, int height, int swidth, int sheight, int fps, int bitrate){
+void OBSBasic::on_signal_StartStreaming(QString name, QString url, int width,
+	int height, int swidth, int sheight, int fps, int bitrate){
 	
 	deskshare_ConfigSettings(name, url, width, height, swidth, sheight, fps, bitrate);
-	deskshare_ConfigDisplayId(display);
-
 	StartStreaming();
+}
+
+void OBSBasic::on_signal_TrayConfig(int display, bool captureMouse){
+	deskshare_ConfigDisplayId(display);
+}
+
+void OBSBasic::on_signal_TrayConfigInit(int *displayid, bool *captureMouse){
+	showSourcePropertiesWindow = false;
+	on_actionSourceProperties_triggered();
+
+	QList<QComboBox*> children = properties->findChildren<QComboBox*>();
+
+	if (children.count() == 1)
+		*displayid = children[0]->currentIndex();
+
+	properties->close();
+
+	showSourcePropertiesWindow = true;
 }
 
 void OBSBasic::deskshare_ConfigSettings(QString path, QString url,

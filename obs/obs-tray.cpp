@@ -28,6 +28,8 @@
 #include "obs-tray.hpp"
 #include "obs-app.hpp"
 #include "obs-tray-window-config.hpp"
+#include "window-main.hpp"
+#include "window-basic-main.hpp"
 
 #include <iostream>
 
@@ -163,9 +165,21 @@ void OBSTray::ToggleVisibility(){
 }
 
 void OBSTray::ShowConfigWindow(){
-	auto configWindow = OBSTrayConfig();
+	int displayid; bool captureMouse;
+	emit signal_trayConfigInit(&displayid, &captureMouse);
+
+	OBSTrayConfig configWindow = OBSTrayConfig(displayid, captureMouse);
+	
+	configWindow.setModal(true);
+	
+	connect(&configWindow, SIGNAL(SetConfig(int, bool)),
+		this, SLOT(onTrayConfig(int, bool)));
 
 	configWindow.exec();
+}
+
+void OBSTray::onTrayConfig(int displayid, bool captureMouse){
+	emit signal_trayConfigChanged(displayid, captureMouse);
 }
 
 void OBSTray::SendStartStreamingSignal(Message c){
@@ -192,7 +206,7 @@ void OBSTray::SendStartStreamingSignal(Message c){
 	int height	= desktop.screenGeometry(c.DisplayID).height();
 
 	emit signal_startStreaming(c.StreamName, c.StreamPath,
-		c.DisplayID, width, height, c.Width, c.Height, c.FPS, c.Bitrate);
+		width, height, c.Width, c.Height, c.FPS, c.Bitrate);
 
 	isStreaming = true;
 

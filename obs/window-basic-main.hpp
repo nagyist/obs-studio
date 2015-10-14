@@ -191,8 +191,10 @@ private:
 	obs_hotkey_pair_id streamingHotkeys, recordingHotkeys;
 
 public slots:
-	void on_signal_StartStreaming(QString url, QString path, int display,
-		int width, int height, int scaled_width, int scaled_height, int fps, int bitrate);
+	void on_signal_StartStreaming(QString url, QString path, int width,
+		int height, int scaled_width, int scaled_height, int fps, int bitrate);
+	void on_signal_TrayConfig(int displayid, bool captureMouse);
+	void on_signal_TrayConfigInit(int *display, bool *captureMouse);
 	void ToggleVisibility();
 
 	void StartStreaming();
