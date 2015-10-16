@@ -24,16 +24,16 @@ OBSTrayConfig::OBSTrayConfig(int displayId, bool mouse) : QDialog() {
 
 	displaySelection = new QComboBox();
 	for (int i = 1; i <= screenCount; i++)
-		displaySelection->addItem(tr("Display ") + QString::number(i));
+		displaySelection->addItem(tr("Monitor ") + QString::number(i));
 	displaySelection->setCurrentIndex(displayId);
 
 	captureMouse = new QCheckBox(tr("Capture mouse"));
 	captureMouse->setChecked(mouse);
 
-	QPushButton *saveButton = new QPushButton(tr("Save"));
+	QPushButton *saveButton = new QPushButton(tr("Salvar"));
 	connect(saveButton, SIGNAL(clicked()), this, SLOT(Save()));
 
-	QPushButton *closeButton = new QPushButton(tr("Close"));
+	QPushButton *closeButton = new QPushButton(tr("Fechar"));
 	connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
 
 	QVBoxLayout *layout = new QVBoxLayout;
@@ -52,7 +52,7 @@ OBSTrayConfig::OBSTrayConfig(int displayId, bool mouse) : QDialog() {
 	mainLayout->addLayout(buttonsLayout);
 	setLayout(mainLayout);
 
-	setWindowTitle(tr("Config Dialog"));
+	setWindowTitle(tr("Config"));
 }
 
 void OBSTrayConfig::Save(bool close){

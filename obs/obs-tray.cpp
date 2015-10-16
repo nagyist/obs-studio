@@ -75,17 +75,17 @@ void OBSTray::onClientConnected(){
 }
 
 void OBSTray::CreateActions(){
-	infoAction = new QAction(tr("Show info"), this);
+	infoAction = new QAction(STR_INFO, this);
 	connect(infoAction, SIGNAL(triggered()), this, SLOT(ShowInfo()));
 
-	toggleVisibilityAction = new QAction(tr("Toggle"), this);
+	toggleVisibilityAction = new QAction(STR_TOGGLE, this);
 	connect(toggleVisibilityAction, SIGNAL(triggered()),
 		this, SLOT(ToggleVisibility()));
 
-	configAction = new QAction(tr("Config"), this);
+	configAction = new QAction(STR_CONFIG, this);
 	connect(configAction, SIGNAL(triggered()), this, SLOT(ShowConfigWindow()));
 
-	quitAction = new QAction(tr("&Sair"), this);
+	quitAction = new QAction(STR_EXIT, this);
 	connect(quitAction, SIGNAL(triggered()), this, SLOT(Close()));
 }
 

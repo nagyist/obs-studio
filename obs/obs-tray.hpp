@@ -36,6 +36,12 @@
 
 #define balloonDuration 1000
 
+#define ptbr QString::fromLatin1
+#define STR_INFO ptbr("Informações")
+#define STR_TOGGLE ptbr("OBS")
+#define STR_CONFIG ptbr("Configurações")
+#define STR_EXIT ptbr("Sair")
+
 class Message;
 
 class OBSTray : public QSystemTrayIcon {
