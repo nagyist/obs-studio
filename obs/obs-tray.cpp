@@ -50,8 +50,8 @@ OBSTray::OBSTray(){
 		connect(wsServer, SIGNAL(newConnection()), this, SLOT(onClientConnected()));
 	}
 
-	defaultIcon = QIcon(":/settings/images/settings/video-display-3.png");
-	playingIcon = QIcon(":/settings/images/settings/network.png");
+	defaultIcon = QIcon(":/res/images/tray_default.ico");
+	playingIcon = QIcon(":/res/images/tray_on.ico");
 
 	CreateActions();
 	

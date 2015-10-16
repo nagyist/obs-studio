@@ -13,6 +13,9 @@
     <file>images/properties.png</file>
     <file>images/up.png</file>
     <file>images/obs.png</file>
+    <file>images/tray_default.ico</file>
+    <file>images/tray_off.ico</file>
+    <file>images/tray_on.ico</file>
   </qresource>
   <qresource prefix="/settings">
     <file>images/settings/advanced.png</file>

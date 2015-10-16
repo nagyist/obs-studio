@@ -26,13 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class OBSTrayConfig : public QDialog {
 	Q_OBJECT
-	/*
-		This must have a way of getting from the OBS UI the value of some configs
-			(the ones it wants to change)
-		Display a window for configuring e.g. display to stream and other things
-			(capture mouse?)
-	*/
-
+	
 public:
 	OBSTrayConfig(int displayId = 1, bool captureMouse = true);
 
