@@ -79,10 +79,12 @@ void OBSTray::CreateActions(){
 	connect(infoAction, SIGNAL(triggered()), this, SLOT(ShowInfo()));
 
 	toggleVisibilityAction = new QAction(STR_TOGGLE, this);
+	toggleVisibilityAction->setIcon(QIcon(":/res/images/obs.png"));
 	connect(toggleVisibilityAction, SIGNAL(triggered()),
 		this, SLOT(ToggleVisibility()));
 
 	configAction = new QAction(STR_CONFIG, this);
+	configAction->setIcon(QIcon(":/settings/images/settings/advanced.png"));
 	connect(configAction, SIGNAL(triggered()), this, SLOT(ShowConfigWindow()));
 
 	quitAction = new QAction(STR_EXIT, this);
