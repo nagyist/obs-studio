@@ -23,8 +23,11 @@ OBSTrayConfig::OBSTrayConfig(int displayId, bool mouse) : QDialog() {
 	int screenCount = desktop.screenCount();
 
 	displaySelection = new QComboBox();
-	for (int i = 1; i <= screenCount; i++)
+	for (int i = 1; i <= screenCount; i++){
 		displaySelection->addItem(tr("Monitor ") + QString::number(i));
+		displaySelection->setItemIcon(i - 1,
+			QIcon(":/settings/images/settings/video-display-3.png"));
+	}
 	displaySelection->setCurrentIndex(displayId);
 
 	captureMouse = new QCheckBox(tr("Capture mouse"));
