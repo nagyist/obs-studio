@@ -100,7 +100,6 @@ set(obs_SOURCES
 	${obs_PLATFORM_SOURCES}
 	obs-app.cpp
 	obs-tray.cpp
-	obs-tray-window-config.cpp
 	window-basic-main.cpp
 	window-basic-filters.cpp
 	window-basic-settings.cpp
@@ -140,7 +139,6 @@ set(obs_SOURCES
 set(obs_HEADERS
 	obs-app.hpp
 	obs-tray.hpp
-	obs-tray-window-config.hpp
 	platform.hpp
 	window-main.hpp
 	window-basic-main.hpp

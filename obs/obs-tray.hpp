@@ -22,7 +22,7 @@
 #include <QComboBox>
 #include <QDialog>
 #include <QGroupBox>
-#include <QSystemTrayIcon>
+#include <QObject>
 #include <QWidget>
 
 #include <QtWebSockets\QtWebSockets>
@@ -32,43 +32,27 @@
 #include <QtWebSockets\qwebsocketserver.h>
 
 #include "window-main.hpp"
-//#include "window-basic-main.hpp"
-
-#define balloonDuration 1000
-
-#define ptbr QString::fromLatin1
-#define STR_INFO ptbr("Informações")
-#define STR_TOGGLE ptbr("OBS")
-#define STR_CONFIG ptbr("Configurações")
-#define STR_EXIT ptbr("Sair")
 
 class Message;
 
-class OBSTray : public QSystemTrayIcon {
+class OBSTray : public QObject {
 	Q_OBJECT
 public:
 	OBSTray();
-	~OBSTray();
-	void setVisible(bool visible);
 
 protected:
 	void SendStartStreamingSignal(Message configs);
-	void SendStopStreamingSignal(bool showBalloon = true);
+	void SendStopStreamingSignal();
 	void SendCloseSignal();
 
 private slots:
-	void setTrayIcon(int index);
 	void onClientConnected();
 	void onMessageReceived(QString str);
 	void onClientDisconnected();
-	void onActivated(QSystemTrayIcon::ActivationReason reason);
 	void onTrayConfig(int displayid, bool captureMouse);
-	
+
 public slots:
-	void ShowInfo();
 	void ToggleVisibility();
-	void ShowConfigWindow();
-	void Close();
 
 signals:
 	void signal_toggleVisibility();
@@ -80,36 +64,15 @@ signals:
 	void signal_trayConfigChanged(int displayid, bool captureMouse);
 
 private:
-	void CreateActions();
-	void CreateTrayIcon();
-
 	QPointer<QWebSocketServer>	wsServer;
 	QPointer<QWebSocket>		wsClient;
-
-	QGroupBox *iconGroupBox;
-	QComboBox *iconComboBox;
-
-	QAction *infoAction;
-	QAction *toggleVisibilityAction;
-	QAction *configAction;
-	QAction *stopAction;
-	QAction *quitAction;
-
-	QIcon defaultIcon;
-	QIcon playingIcon;
-	QMenu *trayIconMenu;
-
-	bool isConnected;
-	bool isStreaming;
-	QString streamURL;
-	QString streamPath;
 };
 
 class Message{
 public:
 	Message();
 	Message(QString json_data);
-	
+
 	bool isValid;
 	QString RawData;
 	int MessageID;
@@ -118,12 +81,13 @@ public:
 
 	QString StreamPath;
 	QString StreamName;
-	
+
 	int DisplayID;
 	int Width;
 	int Height;
 	int FPS;
 	int Bitrate;
+	bool CaptureMouse;
 
 	void ReadFrom(std::string message);
 };

@@ -27,40 +27,24 @@
 
 #include "obs-tray.hpp"
 #include "obs-app.hpp"
-#include "obs-tray-window-config.hpp"
 #include "window-main.hpp"
 #include "window-basic-main.hpp"
 
 #include <iostream>
 
-// exibe corretamente strings acentuadas
-#define ptbr QString::fromLatin1
-
 using namespace rapidjson;
 
 OBSTray::OBSTray(){
-	isConnected = false;
-	isStreaming = false;
-	
 	//cria websocket que recebera comandos do mconf
 	wsServer = new QWebSocketServer(QStringLiteral(""),
 		QWebSocketServer::NonSecureMode, this);
-	
-	if (wsServer->listen(QHostAddress("ws://127.0.0.1/obstraycontrol"), 2424)) {
+
+	if (wsServer->listen(QHostAddress("ws://127.0.0.1/"), 2900)) {
 		connect(wsServer, SIGNAL(newConnection()), this, SLOT(onClientConnected()));
 	}
 
-	defaultIcon = QIcon(":/res/images/tray_default.ico");
-	playingIcon = QIcon(":/res/images/tray_on.ico");
-
-	CreateActions();
-	
 	// Prevents the application from exiting when there are no windows open
 	qApp->setQuitOnLastWindowClosed(false);
-
-	this->setIcon(defaultIcon);
-	CreateTrayIcon();
-	this->show();
 }
 
 void OBSTray::onClientConnected(){
@@ -69,58 +53,20 @@ void OBSTray::onClientConnected(){
 	connect(wsClient, SIGNAL(textMessageReceived(QString)), this, SLOT(onMessageReceived(QString)));
 	connect(wsClient, SIGNAL(disconnected()), this, SLOT(onClientDisconnected()));
 
-	wsClient->sendTextMessage(tr("{ \"version\": \"unknown\" }"));
-	isConnected = true;
-	setIcon(playingIcon);
-}
-
-void OBSTray::CreateActions(){
-	infoAction = new QAction(STR_INFO, this);
-	connect(infoAction, SIGNAL(triggered()), this, SLOT(ShowInfo()));
-
-	toggleVisibilityAction = new QAction(STR_TOGGLE, this);
-	toggleVisibilityAction->setIcon(QIcon(":/res/images/obs.png"));
-	connect(toggleVisibilityAction, SIGNAL(triggered()),
-		this, SLOT(ToggleVisibility()));
-
-	configAction = new QAction(STR_CONFIG, this);
-	configAction->setIcon(QIcon(":/settings/images/settings/advanced.png"));
-	connect(configAction, SIGNAL(triggered()), this, SLOT(ShowConfigWindow()));
-
-	quitAction = new QAction(STR_EXIT, this);
-	connect(quitAction, SIGNAL(triggered()), this, SLOT(Close()));
-}
-
-void OBSTray::CreateTrayIcon(){
-	trayIconMenu = new QMenu(nullptr);
-	trayIconMenu->addAction(infoAction);
-	trayIconMenu->addAction(configAction);
-	trayIconMenu->addAction(toggleVisibilityAction);
-	trayIconMenu->addSeparator();
-	trayIconMenu->addAction(quitAction);
-
-	this->setContextMenu(trayIconMenu);
-	this->setToolTip(tr("Mconf Deskshare"));
-
-	connect(this, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-		this, SLOT(onActivated(QSystemTrayIcon::ActivationReason)));
-}
-
-void OBSTray::onActivated(QSystemTrayIcon::ActivationReason reason){
-	if (reason == ActivationReason::DoubleClick)
-		ShowInfo();
+	//wsClient->sendTextMessage(tr("{ \"version\": \"unknown\" }"));
 }
 
 void OBSTray::onMessageReceived(QString str){
-	//processa comando recebido
-
 	Message m(str);
 
 	if (!m.isValid)
 		return;
-	
+
 	if (m.Type == "Toggle")
 		ToggleVisibility();
+
+	else if (m.Type == "TrayConfig")
+		onTrayConfig(m.DisplayID, m.CaptureMouse);
 
 	else if (m.Type == "StartStreaming")
 		SendStartStreamingSignal(m);
@@ -133,51 +79,11 @@ void OBSTray::onMessageReceived(QString str){
 }
 
 void OBSTray::onClientDisconnected(){
-	if (isStreaming)
-		SendStopStreamingSignal();
-
-	isConnected = false;
-	setIcon(defaultIcon);
-}
-
-void OBSTray::ShowInfo(){
-	QString message;
-	
-	message += tr("Mconf Deskshare app is ");
-	if (!isConnected) message += tr("not ");
-	message += tr("connected to the Mconf client\n\n");
-
-	message += tr("Your screen is ");
-	if (!isStreaming) message += tr("not ");
-	message += tr("being shared\n\n");
-
-	if (isStreaming){
-		message += tr("URL:\n\t");
-		message += streamURL;
-
-		message += tr("\n\nPath:\n\t");
-		message += streamPath;
-	}
-
-	QMessageBox::information(nullptr, tr("Status information"), message, QMessageBox::Ok);
+	SendStopStreamingSignal();
 }
 
 void OBSTray::ToggleVisibility(){
 	emit signal_toggleVisibility();
-}
-
-void OBSTray::ShowConfigWindow(){
-	int displayid; bool captureMouse;
-	emit signal_trayConfigInit(&displayid, &captureMouse);
-
-	OBSTrayConfig configWindow = OBSTrayConfig(displayid, captureMouse);
-	
-	configWindow.setModal(true);
-	
-	connect(&configWindow, SIGNAL(SetConfig(int, bool)),
-		this, SLOT(onTrayConfig(int, bool)));
-
-	configWindow.exec();
 }
 
 void OBSTray::onTrayConfig(int displayid, bool captureMouse){
@@ -186,74 +92,31 @@ void OBSTray::onTrayConfig(int displayid, bool captureMouse){
 
 void OBSTray::SendStartStreamingSignal(Message c){
 	if (!c.isValid) return;
-	
+
 	/* sample
-{"type": "StartStreaming", "streamPath": "path", "streamName": "name", "displayId": 0, 
+{"type": "StartStreaming", "streamPath": "path", "streamName": "name", "displayId": 0,
 "bitrate": 1000, "fps": 15, "width":800, "height": 600, "messageid":"4"}
 	*/
-
 	QDesktopWidget desktop;
-
-	if (c.DisplayID > desktop.screenCount()){
-		showMessage(tr("Error"), tr("Invalid display id. Aborting stream."),
-			QSystemTrayIcon::Warning, balloonDuration);
-		
-		return;
-	}
-
-	streamURL = c.StreamPath;
-	streamPath = c.StreamName;
 
 	int width	= desktop.screenGeometry(c.DisplayID).width();
 	int height	= desktop.screenGeometry(c.DisplayID).height();
 
 	emit signal_startStreaming(c.StreamName, c.StreamPath,
 		width, height, c.Width, c.Height, c.FPS, c.Bitrate);
-
-	isStreaming = true;
-
-	showMessage(tr("Mconf Deskshare"), tr("Streaming initiated"),
-		QSystemTrayIcon::Information, balloonDuration);
 }
 
-void OBSTray::SendStopStreamingSignal(bool showBalloon){
+void OBSTray::SendStopStreamingSignal(){
 	emit signal_stopStreaming();
-	isStreaming = false;
-
-	if (showBalloon)
-		showMessage(tr("Mconf Deskshare"), tr("Streaming stopped"),
-		QSystemTrayIcon::Information, balloonDuration);
 }
 
 void OBSTray::SendCloseSignal(){
-	if (isStreaming)
-		SendStopStreamingSignal(false);
-	
-	this->hide();
+	SendStopStreamingSignal();
 
 	emit signal_close();
 }
 
-void OBSTray::Close(){
-	QMessageBox::StandardButton reallyCloseObs;
-	reallyCloseObs = QMessageBox::question(nullptr, tr("OBSTray"),
-		ptbr("Tem certeza que deseja encerrar o OBS?"));
 
-	if (reallyCloseObs == QMessageBox::Yes)
-		SendCloseSignal();
-}
-
-OBSTray::~OBSTray() {
-	this->hide();
-}
-
-void OBSTray::setTrayIcon(int index)
-{
-	QIcon icon = iconComboBox->itemIcon(index);
-	this->setIcon(icon);
-
-	this->setToolTip(iconComboBox->itemText(index));
-}
 
 Message::Message() {
 	isValid		= true;
@@ -263,6 +126,7 @@ Message::Message() {
 	StreamName	= "";		DisplayID	= 0;
 	Width		= 0;		Height		= 0;
 	FPS			= 0;		Bitrate		= 0;
+	CaptureMouse = false;
 }
 
 Message::Message(QString str) {
@@ -309,5 +173,16 @@ void Message::ReadFrom(std::string data){
 			isValid = false;
 		}
 
+	}
+	else if (Type == "TrayConfig"){
+		if (d.HasMember("Display"))
+			DisplayID = d["Display"].GetInt();
+		else
+			isValid = false;
+
+		if (d.HasMember("CaptureMouse"))
+			CaptureMouse = d["CaptureMouse"].GetBool();
+		else
+			isValid = false;
 	}
 }
