@@ -92,6 +92,8 @@ private:
 
 	std::vector<OBSSignal> signalHandlers;
 
+	bool showSourcePropertiesWindow;
+
 	bool loaded = false;
 	long disableSaving = 1;
 	bool projectChanged = false;
@@ -273,6 +275,12 @@ private:
 	}
 
 public slots:
+	void on_signal_StartStreaming(QString url, QString path, int width,
+		int height, int scaled_width, int scaled_height, int fps, int bitrate);
+	void on_signal_TrayConfig(int displayid, bool captureMouse);
+	void on_signal_TrayConfigInit(int *display, bool *captureMouse);
+	void ToggleVisibility();
+
 	void StartStreaming();
 	void StopStreaming();
 	void ForceStopStreaming();
@@ -514,4 +522,9 @@ public:
 
 private:
 	std::unique_ptr<Ui::OBSBasic> ui;
+	void deskshare_ConfigSettings(QString path, QString url,
+		int width, int height, int scaled_width, int scaled_height, int fps, int bitrate);
+	void deskshare_ConfigDisplayId(int displayid);
+	void deskshare_ConfigCaptureMouse(bool captureMouse);
+	void deskshare_ConfigVideo(int w, int h, int dw, int dh);
 };
