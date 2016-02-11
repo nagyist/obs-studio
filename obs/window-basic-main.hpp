@@ -106,7 +106,7 @@ private:
 
 	ConfigFile    basicConfig;
 
-	QPointer<QWidget> projectors[10];	
+	QPointer<QWidget> projectors[10];
 
 	void          DrawBackdrop(float cx, float cy);
 

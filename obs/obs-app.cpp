@@ -593,7 +593,7 @@ bool OBSApp::OBSInit()
 		}
 
 		mainWindow = new OBSBasic();
-		
+
 		mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
 		connect(mainWindow, SIGNAL(destroyed()), this, SLOT(quit()));
 
@@ -887,7 +887,7 @@ static int run_program(fstream &logFile, int argc, char *argv[])
 {
 	int ret = -1;
 	QCoreApplication::addLibraryPath(".");
-	
+
 	OBSApp program(argc, argv);
 	try {
 		program.AppInit();
@@ -900,8 +900,7 @@ static int run_program(fstream &logFile, int argc, char *argv[])
 
 		ret = program.OBSInit() ? program.exec() : 0;
 
-	}
-	catch (const char *error) {
+	} catch (const char *error) {
 		blog(LOG_ERROR, "%s", error);
 		OBSErrorBox(nullptr, "%s", error);
 	}

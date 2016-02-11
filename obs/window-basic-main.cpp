@@ -24,9 +24,6 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 
-#include <QWidget>
-#include <QComboBox>
-
 #include <util/dstr.h>
 #include <util/util.hpp>
 #include <util/platform.h>
@@ -536,7 +533,6 @@ void OBSBasic::SaveService()
 	obs_data_t *settings = obs_service_get_settings(service);
 
 	obs_data_set_string(data, "type", obs_service_get_type(service));
-	//obs_data_set_default_string(data, "server", "localhost");
 	obs_data_set_obj(data, "settings", settings);
 
 	const char *json = obs_data_get_json(data);
@@ -567,7 +563,6 @@ bool OBSBasic::LoadService()
 	type = obs_data_get_string(data, "type");
 
 	obs_data_t *settings = obs_data_get_obj(data, "settings");
-	//obs_data_set_default_string(obs_data_get_obj(data, "settings"), "server", "localhost");
 	obs_data_t *hotkey_data = obs_data_get_obj(data, "hotkeys");
 
 	service = obs_service_create(type, "default_service", settings,
@@ -588,7 +583,6 @@ bool OBSBasic::InitService()
 
 	service = obs_service_create("rtmp_common", "default_service", nullptr,
 			nullptr);
-
 	if (!service)
 		return false;
 	obs_service_release(service);
@@ -907,7 +901,7 @@ void OBSBasic::OBSInit()
 	if (!previewEnabled)
 		QMetaObject::invokeMethod(this, "TogglePreview",
 				Qt::QueuedConnection);
-	/*
+
 #ifdef _WIN32
 	uint32_t winVer = GetWindowsVersion();
 	if (winVer > 0 && winVer < 0x602) {
@@ -915,8 +909,8 @@ void OBSBasic::OBSInit()
 				"DisableAero");
 		SetAeroEnabled(!disableAero);
 	}
-#endif*/
-	
+#endif
+
 	RefreshSceneCollections();
 	RefreshProfiles();
 	disableSaving--;
@@ -1132,7 +1126,7 @@ OBSBasic::~OBSBasic()
 	config_set_bool(App()->GlobalConfig(), "BasicWindow", "PreviewEnabled",
 			previewEnabled);
 	config_save(App()->GlobalConfig());
-	/*
+
 #ifdef _WIN32
 	uint32_t winVer = GetWindowsVersion();
 	if (winVer > 0 && winVer < 0x602) {
@@ -1142,7 +1136,7 @@ OBSBasic::~OBSBasic()
 			SetAeroEnabled(true);
 		}
 	}
-#endif*/
+#endif
 }
 
 void OBSBasic::SaveProjectNow()
@@ -2217,7 +2211,7 @@ void OBSBasic::closeEvent(QCloseEvent *event)
 	QWidget::closeEvent(event);
 	if (!event->isAccepted())
 		return;
-	
+
 	if (updateCheckThread)
 		updateCheckThread->wait();
 	if (logUploadThread)

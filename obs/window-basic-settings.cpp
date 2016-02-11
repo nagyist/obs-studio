@@ -2350,7 +2350,7 @@ void OBSBasicSettings::on_streamType_currentIndexChanged(int idx)
 			QT_TO_UTF8(streamType),
 			(PropertiesReloadCallback)obs_get_service_properties,
 			170);
-	
+
 	streamProperties->setProperty("changed", QVariant(true));
 	layout->addWidget(streamProperties);
 
