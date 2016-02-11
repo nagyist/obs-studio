@@ -30,7 +30,7 @@ else()
 endif()
 
 find_package(Qt5Widgets ${FIND_MODE})
-find_package(Qt5Websockets ${FIND_MODE})
+find_package(Qt5WebSockets ${FIND_MODE})
 find_package(Qt5Network ${FIND_MODE})
 
 if(NOT Qt5Widgets_FOUND)
