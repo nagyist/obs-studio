@@ -52,8 +52,6 @@ void OBSTray::onClientConnected(){
 
 	connect(wsClient, SIGNAL(textMessageReceived(QString)), this, SLOT(onMessageReceived(QString)));
 	connect(wsClient, SIGNAL(disconnected()), this, SLOT(onClientDisconnected()));
-
-	//wsClient->sendTextMessage(tr("{ \"version\": \"unknown\" }"));
 }
 
 void OBSTray::onMessageReceived(QString str){
