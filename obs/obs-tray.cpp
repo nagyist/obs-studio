@@ -77,7 +77,7 @@ void OBSTray::onMessageReceived(QString str){
 }
 
 void OBSTray::onClientDisconnected(){
-	SendStopStreamingSignal();
+	SendCloseSignal();
 }
 
 void OBSTray::ToggleVisibility(){
