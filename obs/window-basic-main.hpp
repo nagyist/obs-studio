@@ -509,6 +509,8 @@ private slots:
 	void OpenSourceProjector();
 	void OpenSceneProjector();
 
+	void StreamUpdate();
+
 public:
 	explicit OBSBasic(QWidget *parent = 0);
 	virtual ~OBSBasic();
@@ -520,6 +522,10 @@ public:
 	virtual int GetProfilePath(char *path, size_t size, const char *file)
 		const override;
 
+signals:
+	void signal_StreamStarted();
+	void signal_StreamStopped();
+
 private:
 	std::unique_ptr<Ui::OBSBasic> ui;
 	void deskshare_ConfigSettings(QString path, QString url,
@@ -527,4 +533,9 @@ private:
 	void deskshare_ConfigDisplayId(int displayid);
 	void deskshare_ConfigCaptureMouse(bool captureMouse);
 	void deskshare_ConfigVideo(int w, int h, int dw, int dh);
+
+	QPointer<QTimer> streamMonitorTimer;
+	bool streamActive = false;
+	void StreamStarted(obs_output_t *output);
+	void StreamStopped();
 };

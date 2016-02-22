@@ -114,7 +114,20 @@ void OBSTray::SendCloseSignal(){
 	emit signal_close();
 }
 
+void OBSTray::on_signal_StreamStarted() {
+	QString msg;
+	SendMessageToTray("{ \"type\": \"StreamStarted\" }");
+}
 
+void OBSTray::on_signal_StreamStopped() {
+	SendMessageToTray("{ \"type\": \"StreamStopped\" }");
+}
+
+void OBSTray::SendMessageToTray(QString msg) {
+	if (!wsClient.isNull() && wsClient->isValid()) {
+		wsClient->sendTextMessage(msg);
+	}
+}
 
 Message::Message() {
 	isValid		= true;

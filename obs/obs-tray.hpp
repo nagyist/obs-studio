@@ -44,6 +44,7 @@ protected:
 	void SendStartStreamingSignal(Message configs);
 	void SendStopStreamingSignal();
 	void SendCloseSignal();
+	void SendMessageToTray(QString msg);
 
 private slots:
 	void onClientConnected();
@@ -53,6 +54,8 @@ private slots:
 
 public slots:
 	void ToggleVisibility();
+	void on_signal_StreamStarted();
+	void on_signal_StreamStopped();
 
 signals:
 	void signal_toggleVisibility();

@@ -736,6 +736,11 @@ bool OBSApp::OBSInit()
 		connect(tray, SIGNAL(signal_stopStreaming()),
 			mainWindow, SLOT(StopStreaming()));
 		
+		connect(mainWindow, SIGNAL(signal_StreamStarted()),
+			tray, SLOT(on_signal_StreamStarted()));
+		connect(mainWindow, SIGNAL(signal_StreamStopped()),
+			tray, SLOT(on_signal_StreamStopped()));
+
 		mainWindow->OBSInit();
 
 		connect(this, &QGuiApplication::applicationStateChanged,

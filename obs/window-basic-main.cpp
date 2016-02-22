@@ -994,7 +994,7 @@ void OBSBasic::OBSInit()
 	connect(ui->preview, &OBSQTDisplay::DisplayCreated, addDisplay);
 
 #ifdef _WIN32
-	show(); hide();
+	hide();
 #endif
 
 	bool alwaysOnTop = config_get_bool(App()->GlobalConfig(), "BasicWindow",
@@ -1005,7 +1005,7 @@ void OBSBasic::OBSInit()
 	}
 
 #ifndef _WIN32
-	show(); hide();
+	hide();
 #endif
 
 	QList<int> defSizes;
@@ -3352,6 +3352,7 @@ void OBSBasic::StreamingStart()
 	ui->streamButton->setText(QTStr("Basic.Main.StopStreaming"));
 	ui->streamButton->setEnabled(true);
 	ui->statusbar->StreamStarted(outputHandler->streamOutput);
+	StreamStarted(outputHandler->streamOutput);
 
 	if (ui->profileMenu->isEnabled()) {
 		ui->profileMenu->setEnabled(false);
@@ -3390,6 +3391,7 @@ void OBSBasic::StreamingStop(int code)
 	}
 
 	ui->statusbar->StreamStopped();
+	StreamStopped();
 
 	ui->streamButton->setText(QTStr("Basic.Main.StartStreaming"));
 	ui->streamButton->setEnabled(true);
@@ -4044,4 +4046,30 @@ int OBSBasic::GetProfilePath(char *path, size_t size, const char *file) const
 		return snprintf(path, size, "%s/%s", profiles_path, profile);
 
 	return snprintf(path, size, "%s/%s/%s", profiles_path, profile, file);
+}
+
+void OBSBasic::StreamUpdate() {
+	uint64_t bytesSent = obs_output_get_total_bytes(outputHandler->streamOutput);
+	if (bytesSent > 0) {
+		emit signal_StreamStarted();
+		delete streamMonitorTimer;
+	}
+}
+
+void OBSBasic::StreamStarted(obs_output_t *output) {
+	if (!streamActive) {
+		streamMonitorTimer = new QTimer(this);
+		connect(streamMonitorTimer, SIGNAL(timeout()),
+			this, SLOT(StreamUpdate()));
+		streamMonitorTimer->start(1000);
+		streamActive = true;
+	}
+}
+
+void OBSBasic::StreamStopped() {
+	if (!outputHandler->Active()) {
+		emit signal_StreamStopped();
+		delete streamMonitorTimer;
+		streamActive = false;
+	}
 }
