@@ -35,6 +35,7 @@
 #include <QScreen>
 #include <QStandardItemModel>
 #include <QSpacerItem>
+#include <qt-wrappers.hpp>
 
 #include "audio-encoders.hpp"
 #include "hotkey-edit.hpp"
@@ -42,7 +43,6 @@
 #include "obs-app.hpp"
 #include "platform.hpp"
 #include "properties-view.hpp"
-#include "qt-wrappers.hpp"
 #include "window-basic-main.hpp"
 #include "window-basic-settings.hpp"
 #include "window-basic-main-outputs.hpp"
@@ -5354,7 +5354,7 @@ void OBSBasicSettings::FillSimpleRecordingValues()
 		ui->simpleOutRecEncoder->addItem(
 			ENCODER_STR("Hardware.NVENC.H264"),
 			QString(SIMPLE_ENCODER_NVENC));
-	if (EncoderAvailable("jim_av1_nvenc"))
+	if (EncoderAvailable("obs_nvenc_av1_tex"))
 		ui->simpleOutRecEncoder->addItem(
 			ENCODER_STR("Hardware.NVENC.AV1"),
 			QString(SIMPLE_ENCODER_NVENC_AV1));

@@ -6,7 +6,11 @@ find_package(MbedTLS REQUIRED)
 find_package(ZLIB REQUIRED)
 
 if(NOT TARGET happy-eyeballs)
-  add_subdirectory("${CMAKE_SOURCE_DIR}/deps/happy-eyeballs" "${CMAKE_BINARY_DIR}/deps/happy-eyeballs")
+  add_subdirectory("${CMAKE_SOURCE_DIR}/shared/happy-eyeballs" "${CMAKE_BINARY_DIR}/shared/happy-eyeballs")
+endif()
+
+if(NOT TARGET OBS::opts-parser)
+  add_subdirectory("${CMAKE_SOURCE_DIR}/shared/opts-parser" "${CMAKE_BINARY_DIR}/shared/opts-parser")
 endif()
 
 add_library(obs-outputs MODULE)
@@ -82,8 +86,6 @@ if(OS_WINDOWS)
   configure_file(cmake/windows/obs-module.rc.in obs-outputs.rc)
   target_sources(obs-outputs PRIVATE obs-outputs.rc)
 endif()
-
-include(cmake/ftl.cmake)
 
 # cmake-format: off
 set_target_properties_obs(obs-outputs PROPERTIES FOLDER plugins/obs-outputs PREFIX "")

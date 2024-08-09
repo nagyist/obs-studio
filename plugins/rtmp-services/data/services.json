@@ -1601,25 +1601,6 @@
             ]
         },
         {
-            "name": "YouNow",
-            "common": false,
-            "protocol": "FTL",
-            "servers": [
-                {
-                    "name": "younow.com",
-                    "url": "https://api.younow.com/php/api/broadcast/ingest?id="
-                }
-            ],
-            "recommended": {
-                "keyint": 2,
-                "output": "ftl_output",
-                "max audio bitrate": 160,
-                "max video bitrate": 7000,
-                "profile": "main",
-                "bframes": 0
-            }
-        },
-        {
             "name": "Steam",
             "common": false,
             "servers": [
@@ -2584,40 +2565,20 @@
             "stream_key_link": "https://masterstream.ir/managestreams.php",
             "servers": [
                 {
-                    "name": "Auto (Iran Servers)",
-                    "url": "rtmp://auto.masterstream.ir/live"
+                    "name": "Iran Server 1 - Bandwidth Required",
+                    "url": "rtmp://live-vip1.masterstream.ir/live"
                 },
                 {
-                    "name": "Iran Server 1",
-                    "url": "rtmp://live1.masterstream.ir/live"
-                },
-                {
-                    "name": "Iran Server 2",
-                    "url": "rtmp://live2.masterstream.ir/live"
-                },
-                {
-                    "name": "Iran Server 3",
-                    "url": "rtmp://live3.masterstream.ir/live"
-                },
-                {
-                    "name": "Iran Server 4",
-                    "url": "rtmp://live4.masterstream.ir/live"
-                },
-                {
-                    "name": "Iran Server 5",
-                    "url": "rtmp://live5.masterstream.ir/live"
-                },
-                {
-                    "name": "Iran Server 6",
-                    "url": "rtmp://live6.masterstream.ir/live"
-                },
-                {
-                    "name": "Iran Server 7",
-                    "url": "rtmp://live7.masterstream.ir/live"
+                    "name": "Iran Server 2 - Bandwidth Required",
+                    "url": "rtmp://live-vip2.masterstream.ir/live"
                 },
                 {
                     "name": "Turkey Server 1",
                     "url": "rtmp://tr-live1.masterstream.ir/live"
+                },
+                {
+                    "name": "Russia Server 1",
+                    "url": "rtmp://ru-live1.masterstream.ir/live"
                 }
             ],
             "protocol": "RTMP",

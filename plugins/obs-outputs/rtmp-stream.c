@@ -350,6 +350,7 @@ static void droptest_cap_data_rate(struct rtmp_stream *stream, size_t size)
 }
 #endif
 
+#ifdef _WIN32
 static int socket_queue_data(RTMPSockBuf *sb, const char *data, int len,
 			     void *arg)
 {
@@ -384,6 +385,7 @@ retry_send:
 
 	return len;
 }
+#endif // _WIN32
 
 static int handle_socket_read(struct rtmp_stream *stream)
 {
@@ -639,7 +641,6 @@ static void dbr_set_bitrate(struct rtmp_stream *stream);
 
 #ifdef _WIN32
 #define socklen_t int
-#endif
 
 static void log_sndbuf_size(struct rtmp_stream *stream)
 {
@@ -651,6 +652,7 @@ static void log_sndbuf_size(struct rtmp_stream *stream)
 		info("Socket send buffer is %d bytes", cur_sendbuf_size);
 	}
 }
+#endif
 
 static void *send_thread(void *data)
 {
@@ -658,7 +660,7 @@ static void *send_thread(void *data)
 
 	os_set_thread_name("rtmp-stream: send_thread");
 
-#if defined(_WIN32)
+#ifdef _WIN32
 	log_sndbuf_size(stream);
 #endif
 
@@ -733,7 +735,7 @@ static void *send_thread(void *data)
 		send_footers(stream); // Y2023 spec
 	}
 
-#if defined(_WIN32)
+#ifdef _WIN32
 	log_sndbuf_size(stream);
 #endif
 
@@ -1314,7 +1316,7 @@ static bool init_connect(struct rtmp_stream *stream)
 	stream->total_bytes_sent = 0;
 	stream->dropped_frames = 0;
 	stream->min_priority = 0;
-	stream->got_first_video = false;
+	stream->got_first_packet = false;
 
 	settings = obs_output_get_settings(stream->output);
 	dstr_copy(&stream->path,
@@ -1761,10 +1763,10 @@ static void rtmp_stream_data(void *data, struct encoder_packet *packet)
 	}
 
 	if (packet->type == OBS_ENCODER_VIDEO) {
-		if (!stream->got_first_video) {
+		if (!stream->got_first_packet) {
 			stream->start_dts_offset =
 				get_ms_time(packet, packet->dts);
-			stream->got_first_video = true;
+			stream->got_first_packet = true;
 		}
 
 		switch (stream->video_codec[packet->track_idx]) {
@@ -1788,6 +1790,12 @@ static void rtmp_stream_data(void *data, struct encoder_packet *packet)
 			break;
 		}
 	} else {
+		if (!stream->got_first_packet) {
+			stream->start_dts_offset =
+				get_ms_time(packet, packet->dts);
+			stream->got_first_packet = true;
+		}
+
 		obs_encoder_packet_ref(&new_packet, packet);
 	}
 
